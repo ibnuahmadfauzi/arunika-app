@@ -18,5 +18,7 @@ router.get("/", (req, res) => {
 // Route for companies
 // GET : all companies
 router.get("/companies", arunikaController.getAllCompanies);
+// GET : 1 company
+router.get("/companies/:id", arunikaController.getCompanyById);
 
 module.exports = router;
