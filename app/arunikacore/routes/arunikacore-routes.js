@@ -26,6 +26,8 @@ router.get("/companies", arunikaController.getAllCompanies);
 router.get("/companies/:id", arunikaController.getCompanyById);
 // POST : add 1 company data
 router.post("/companies", arunikaController.storeCompany);
+// PUT : update 1 company data by ID
+router.put("/companies/:id", arunikaController.updateCompany);
 // ======================================================================================== //
 // ======================================================================================== //
 // ======================================================================================== //
