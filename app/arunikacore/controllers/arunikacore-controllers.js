@@ -159,6 +159,47 @@ function updateCompany(req, res) {
     }
   });
 }
+
+// delete company data
+function deleteCompany(req, res) {
+  const filePath = path.join(__dirname, "../../../data/companies.json");
+  const companyId = parseInt(req.params.id);
+
+  fs.readFile(filePath, "utf8", (err, data) => {
+    if (err) {
+      console.error("Failed to read file:", err);
+      return res.status(500).json({ error: "Internal Server Error" });
+    }
+
+    try {
+      let companies = JSON.parse(data);
+      const index = companies.findIndex((c) => c.id === companyId);
+
+      if (index === -1) {
+        return res.status(404).json({ error: "Company not found" });
+      }
+
+      // Hapus company dari array
+      const deletedCompany = companies.splice(index, 1)[0];
+
+      // Simpan ulang ke file
+      fs.writeFile(filePath, JSON.stringify(companies, null, 2), (writeErr) => {
+        if (writeErr) {
+          console.error("Failed to write file:", writeErr);
+          return res.status(500).json({ error: "Failed to delete company" });
+        }
+
+        res.json({
+          message: "Company deleted successfully",
+          deleted: deletedCompany,
+        });
+      });
+    } catch (parseErr) {
+      console.error("Failed to parse companies.json:", parseErr);
+      res.status(500).json({ error: "Failed to parse companies.json" });
+    }
+  });
+}
 // ======================================================================================== //
 // ======================================================================================== //
 // ======================================================================================== //
@@ -168,4 +209,5 @@ module.exports = {
   getCompanyById,
   storeCompany,
   updateCompany,
+  deleteCompany,
 };

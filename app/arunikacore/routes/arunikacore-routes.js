@@ -28,6 +28,8 @@ router.get("/companies/:id", arunikaController.getCompanyById);
 router.post("/companies", arunikaController.storeCompany);
 // PUT : update 1 company data by ID
 router.put("/companies/:id", arunikaController.updateCompany);
+// DELETE : delete 1 company data by ID
+router.delete("/companies/:id", arunikaController.deleteCompany);
 // ======================================================================================== //
 // ======================================================================================== //
 // ======================================================================================== //
