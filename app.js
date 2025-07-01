@@ -4,6 +4,8 @@ const arunikaCoreRouter = require("./app/arunikacore/routes/arunikacore-routes")
 
 const app = express();
 const port = 8080;
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 // Use the routers
 app.use("/absensi", absensiRouter);
