@@ -200,9 +200,29 @@ function deleteCompany(req, res) {
     }
   });
 }
+
 // ======================================================================================== //
 // ======================================================================================== //
 // ======================================================================================== //
+
+// Controller for Positions Data
+function getAllPositions(req, res) {
+  const filePath = path.join(__dirname, "../../../data/positions.json");
+
+  fs.readFile(filePath, "utf8", (err, data) => {
+    if (err) {
+      console.error("Failed to read file:", err);
+      return res.status(500).json({ error: "Internal Server Error" });
+    }
+
+    try {
+      const positions = JSON.parse(data);
+      res.json(positions);
+    } catch (parseErr) {
+      res.status(500).json({ error: "Failed to parse positions.json" });
+    }
+  });
+}
 
 module.exports = {
   getAllCompanies,
@@ -210,4 +230,5 @@ module.exports = {
   storeCompany,
   updateCompany,
   deleteCompany,
+  getAllPositions,
 };
