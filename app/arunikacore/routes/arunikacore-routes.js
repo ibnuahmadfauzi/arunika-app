@@ -36,7 +36,7 @@ router.delete("/companies/:id", arunikaController.deleteCompany);
 // GET : all positions
 router.get("/positions", arunikaController.getAllPositions);
 // GET : 1 position
-// router.get("/positions/:id", arunikaController.getPositionById);
+router.get("/positions/:id", arunikaController.getPositionById);
 // POST : add 1 position data
 // router.post("/positions", arunikaController.storePosition);
 // PUT : update 1 position data by ID

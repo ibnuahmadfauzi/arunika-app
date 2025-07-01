@@ -206,6 +206,7 @@ function deleteCompany(req, res) {
 // ======================================================================================== //
 
 // Controller for Positions Data
+// Get all positions data
 function getAllPositions(req, res) {
   const filePath = path.join(__dirname, "../../../data/positions.json");
 
@@ -224,6 +225,32 @@ function getAllPositions(req, res) {
   });
 }
 
+// Get specific position data
+function getPositionById(req, res) {
+  const filePath = path.join(__dirname, "../../../data/positions.json");
+  const id = parseInt(req.params.id);
+
+  fs.readFile(filePath, "utf8", (err, data) => {
+    if (err) {
+      console.error("Failed to read file:", err);
+      return res.status(500).json({ error: "Internal Server Error" });
+    }
+
+    try {
+      const positions = JSON.parse(data);
+      const position = positions.find((c) => c.id === id);
+
+      if (!position) {
+        return res.status(404).json({ error: "Position not found" });
+      }
+
+      res.json(position);
+    } catch (parseErr) {
+      res.status(500).json({ error: "Failed to parse positions.json" });
+    }
+  });
+}
+
 module.exports = {
   getAllCompanies,
   getCompanyById,
@@ -231,4 +258,5 @@ module.exports = {
   updateCompany,
   deleteCompany,
   getAllPositions,
+  getPositionById,
 };
