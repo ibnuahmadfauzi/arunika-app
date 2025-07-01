@@ -131,12 +131,5 @@
     "name": "Security",
     "updated_at": "",
     "created_at": "2025-07-01 10:30:45"
-  },
-  {
-    "id": 20,
-    "company_id": 1,
-    "name": "Driver",
-    "updated_at": "",
-    "created_at": "2025-07-01 16:24:30"
   }
 ]

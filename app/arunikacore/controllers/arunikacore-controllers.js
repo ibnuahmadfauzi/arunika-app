@@ -306,6 +306,97 @@ function storePosition(req, res) {
   });
 }
 
+// Update Position Data
+function updatePosition(req, res) {
+  const filePath = path.join(__dirname, "../../../data/positions.json");
+  const positionId = parseInt(req.params.id);
+  const updatedData = req.body;
+
+  fs.readFile(filePath, "utf8", (err, data) => {
+    if (err) {
+      console.error("Failed to read file:", err);
+      return res.status(500).json({ error: "Internal Server Error" });
+    }
+
+    try {
+      let positions = JSON.parse(data);
+      const index = positions.findIndex((c) => c.id === positionId);
+
+      if (index === -1) {
+        return res.status(404).json({ error: "Position not found" });
+      }
+
+      // Update data & set updated_at timestamp
+      positions[index] = {
+        ...positions[index],
+        ...updatedData,
+        updated_at: getCurrentTimestamp(),
+      };
+
+      // Simpan kembali ke file
+      fs.writeFile(filePath, JSON.stringify(positions, null, 2), (writeErr) => {
+        if (writeErr) {
+          console.error("Failed to write file:", writeErr);
+          return res.status(500).json({ error: "Failed to save data" });
+        }
+
+        res.json({
+          message: "position updated successfully",
+          position: positions[index],
+        });
+      });
+    } catch (parseErr) {
+      console.error("Failed to parse positions.json:", parseErr);
+      res.status(500).json({ error: "Failed to parse positions.json" });
+    }
+  });
+}
+
+// Delete position data
+function deletePosition(req, res) {
+  const filePath = path.join(__dirname, "../../../data/positions.json");
+  const positionId = parseInt(req.params.id);
+
+  fs.readFile(filePath, "utf8", (err, data) => {
+    if (err) {
+      console.error("Failed to read file:", err);
+      return res.status(500).json({ error: "Internal Server Error" });
+    }
+
+    try {
+      let positions = JSON.parse(data);
+      const index = positions.findIndex((c) => c.id === positionId);
+
+      if (index === -1) {
+        return res.status(404).json({ error: "position not found" });
+      }
+
+      // Hapus position dari array
+      const deletedPosition = positions.splice(index, 1)[0];
+
+      // Simpan ulang ke file
+      fs.writeFile(filePath, JSON.stringify(positions, null, 2), (writeErr) => {
+        if (writeErr) {
+          console.error("Failed to write file:", writeErr);
+          return res.status(500).json({ error: "Failed to delete Position" });
+        }
+
+        res.json({
+          message: "Position deleted successfully",
+          deleted: deletedPosition,
+        });
+      });
+    } catch (parseErr) {
+      console.error("Failed to parse positions.json:", parseErr);
+      res.status(500).json({ error: "Failed to parse positions.json" });
+    }
+  });
+}
+
+// ======================================================================================== //
+// ======================================================================================== //
+// ======================================================================================== //
+
 module.exports = {
   getAllCompanies,
   getCompanyById,
@@ -315,4 +406,6 @@ module.exports = {
   getAllPositions,
   getPositionById,
   storePosition,
+  updatePosition,
+  deletePosition,
 };

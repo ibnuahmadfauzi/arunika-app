@@ -40,8 +40,8 @@ router.get("/positions/:id", arunikaController.getPositionById);
 // POST : add 1 position data
 router.post("/positions", arunikaController.storePosition);
 // PUT : update 1 position data by ID
-// router.put("/positions/:id", arunikaController.updatePosition);
+router.put("/positions/:id", arunikaController.updatePosition);
 // DELETE : delete 1 position data by ID
-// router.delete("/positions/:id", arunikaController.deletePosition);
+router.delete("/positions/:id", arunikaController.deletePosition);
 
 module.exports = router;
