@@ -1,0 +1,97 @@
+[
+  {
+    "id": 1,
+    "company_id": 1,
+    "name": "CEO"
+  },
+  {
+    "id": 2,
+    "company_id": 1,
+    "name": "CMD"
+  },
+  {
+    "id": 3,
+    "company_id": 1,
+    "name": "HCA"
+  },
+  {
+    "id": 4,
+    "company_id": 1,
+    "name": "GA - Asset"
+  },
+  {
+    "id": 5,
+    "company_id": 1,
+    "name": "FTAP"
+  },
+  {
+    "id": 6,
+    "company_id": 1,
+    "name": "MIS - IT"
+  },
+  {
+    "id": 7,
+    "company_id": 1,
+    "name": "IT Staff"
+  },
+  {
+    "id": 8,
+    "company_id": 1,
+    "name": "TSD"
+  },
+  {
+    "id": 9,
+    "company_id": 1,
+    "name": "AP"
+  },
+  {
+    "id": 10,
+    "company_id": 1,
+    "name": "CT"
+  },
+  {
+    "id": 11,
+    "company_id": 2,
+    "name": "Dir Ops KDR"
+  },
+  {
+    "id": 12,
+    "company_id": 4,
+    "name": "Dir Ops CMB"
+  },
+  {
+    "id": 13,
+    "company_id": 3,
+    "name": "Dir Ops ADK"
+  },
+  {
+    "id": 14,
+    "company_id": 4,
+    "name": "Drafter CMB"
+  },
+  {
+    "id": 15,
+    "company_id": 3,
+    "name": "Drafter ADK"
+  },
+  {
+    "id": 16,
+    "company_id": 2,
+    "name": "Field Staff Spv."
+  },
+  {
+    "id": 17,
+    "company_id": 2,
+    "name": "Field Staff"
+  },
+  {
+    "id": 18,
+    "company_id": 1,
+    "name": "Office Boy"
+  },
+  {
+    "id": 19,
+    "company_id": 1,
+    "name": "Security"
+  }
+]
