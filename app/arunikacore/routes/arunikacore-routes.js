@@ -46,7 +46,7 @@ router.delete("/positions/:id", arunikaController.deletePosition);
 // ======================================================================================== //
 // ======================================================================================== //
 // ======================================================================================== //
-// Route for rules
+// Route for Users
 // GET : all rules
 router.get("/rules", arunikaController.getAllRules);
 // GET : 1 rule
@@ -57,5 +57,19 @@ router.post("/rules", arunikaController.storeRule);
 router.put("/rules/:id", arunikaController.updateRule);
 // DELETE : delete 1 rule data by ID
 router.delete("/rules/:id", arunikaController.deleteRule);
+// ======================================================================================== //
+// ======================================================================================== //
+// ======================================================================================== //
+// Route for users
+// GET : all users
+router.get("/users", arunikaController.getAllUsers);
+// GET : 1 user
+router.get("/users/:id", arunikaController.getUserById);
+// POST : add 1 user data
+router.post("/users", arunikaController.storeUser);
+// PUT : update 1 user data by ID
+router.put("/users/:id", arunikaController.updateUser);
+// DELETE : delete 1 user data by ID
+router.delete("/users/:id", arunikaController.deleteUser);
 
 module.exports = router;
