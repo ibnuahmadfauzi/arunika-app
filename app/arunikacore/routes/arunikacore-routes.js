@@ -43,5 +43,19 @@ router.post("/positions", arunikaController.storePosition);
 router.put("/positions/:id", arunikaController.updatePosition);
 // DELETE : delete 1 position data by ID
 router.delete("/positions/:id", arunikaController.deletePosition);
+// ======================================================================================== //
+// ======================================================================================== //
+// ======================================================================================== //
+// Route for rules
+// GET : all rules
+router.get("/rules", arunikaController.getAllRules);
+// GET : 1 rule
+router.get("/rules/:id", arunikaController.getRuleById);
+// POST : add 1 rule data
+router.post("/rules", arunikaController.storeRule);
+// PUT : update 1 rule data by ID
+router.put("/rules/:id", arunikaController.updateRule);
+// DELETE : delete 1 rule data by ID
+router.delete("/rules/:id", arunikaController.deleteRule);
 
 module.exports = router;

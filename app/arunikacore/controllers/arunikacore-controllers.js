@@ -397,6 +397,186 @@ function deletePosition(req, res) {
 // ======================================================================================== //
 // ======================================================================================== //
 
+// Controller for Rules Data
+// Get All Rules Data
+function getAllRules(req, res) {
+  const filePath = path.join(__dirname, "../../../data/rules.json");
+
+  fs.readFile(filePath, "utf8", (err, data) => {
+    if (err) {
+      console.error("Failed to read file:", err);
+      return res.status(500).json({ error: "Internal Server Error" });
+    }
+
+    try {
+      const rules = JSON.parse(data);
+      res.json(rules);
+    } catch (parseErr) {
+      res.status(500).json({ error: "Failed to parse rules.json" });
+    }
+  });
+}
+
+// Get Specific Rule Data
+function getRuleById(req, res) {
+  const filePath = path.join(__dirname, "../../../data/rules.json");
+  const id = parseInt(req.params.id);
+
+  fs.readFile(filePath, "utf8", (err, data) => {
+    if (err) {
+      console.error("Failed to read file:", err);
+      return res.status(500).json({ error: "Internal Server Error" });
+    }
+
+    try {
+      const rules = JSON.parse(data);
+      const rule = rules.find((c) => c.id === id);
+
+      if (!rule) {
+        return res.status(404).json({ error: "Rule not found" });
+      }
+
+      res.json(rule);
+    } catch (parseErr) {
+      res.status(500).json({ error: "Failed to parse rules.json" });
+    }
+  });
+}
+
+// Store New Rule Data
+function storeRule(req, res) {
+  const filePath = path.join(__dirname, "../../../data/rules.json");
+
+  // Ambil data baru dari request
+  const newRule = req.body;
+
+  // Baca file JSON dulu untuk mendapatkan id terakhir
+  fs.readFile(filePath, "utf8", (err, data) => {
+    if (err) {
+      console.error("Failed to read file:", err);
+      return res.status(500).json({ error: "Internal Server Error" });
+    }
+
+    try {
+      const rules = JSON.parse(data);
+      const lastId = rules.length > 0 ? rules[rules.length - 1].id : 0;
+
+      // Tambahkan data tambahan
+      const modifiedRule = {
+        id: lastId + 1,
+        name: newRule.name || "Unnamed Rule",
+        updated_at: "", // bisa nanti diisi waktu update
+        created_at: getCurrentTimestamp(),
+      };
+
+      // Simpan ke array dan tulis ulang ke file
+      rules.push(modifiedRule);
+
+      fs.writeFile(filePath, JSON.stringify(rules, null, 2), (writeErr) => {
+        if (writeErr) {
+          console.error("Failed to write file:", writeErr);
+          return res.status(500).json({ error: "Failed to save data" });
+        }
+
+        res.status(201).json({
+          message: "Rule saved",
+          rule: modifiedRule,
+        });
+      });
+    } catch (parseErr) {
+      console.error("Failed to parse rules.json:", parseErr);
+      res.status(500).json({ error: "Failed to parse rules.json" });
+    }
+  });
+}
+
+// Update Rule Data
+function updateRule(req, res) {
+  const filePath = path.join(__dirname, "../../../data/rules.json");
+  const ruleId = parseInt(req.params.id);
+  const updatedData = req.body;
+
+  fs.readFile(filePath, "utf8", (err, data) => {
+    if (err) {
+      console.error("Failed to read file:", err);
+      return res.status(500).json({ error: "Internal Server Error" });
+    }
+
+    try {
+      let rules = JSON.parse(data);
+      const index = rules.findIndex((c) => c.id === ruleId);
+
+      if (index === -1) {
+        return res.status(404).json({ error: "Rule not found" });
+      }
+
+      // Update data & set updated_at timestamp
+      rules[index] = {
+        ...rules[index],
+        ...updatedData,
+        updated_at: getCurrentTimestamp(),
+      };
+
+      // Simpan kembali ke file
+      fs.writeFile(filePath, JSON.stringify(rules, null, 2), (writeErr) => {
+        if (writeErr) {
+          console.error("Failed to write file:", writeErr);
+          return res.status(500).json({ error: "Failed to save data" });
+        }
+
+        res.json({
+          message: "Company updated successfully",
+          rule: rules[index],
+        });
+      });
+    } catch (parseErr) {
+      console.error("Failed to parse rules.json:", parseErr);
+      res.status(500).json({ error: "Failed to parse rules.json" });
+    }
+  });
+}
+
+// delete rule data
+function deleteRule(req, res) {
+  const filePath = path.join(__dirname, "../../../data/rules.json");
+  const ruleId = parseInt(req.params.id);
+
+  fs.readFile(filePath, "utf8", (err, data) => {
+    if (err) {
+      console.error("Failed to read file:", err);
+      return res.status(500).json({ error: "Internal Server Error" });
+    }
+
+    try {
+      let rules = JSON.parse(data);
+      const index = rules.findIndex((c) => c.id === ruleId);
+
+      if (index === -1) {
+        return res.status(404).json({ error: "Rule not found" });
+      }
+
+      // Hapus rule dari array
+      const deletedRule = rules.splice(index, 1)[0];
+
+      // Simpan ulang ke file
+      fs.writeFile(filePath, JSON.stringify(rules, null, 2), (writeErr) => {
+        if (writeErr) {
+          console.error("Failed to write file:", writeErr);
+          return res.status(500).json({ error: "Failed to delete rule" });
+        }
+
+        res.json({
+          message: "Rule deleted successfully",
+          deleted: deletedRule,
+        });
+      });
+    } catch (parseErr) {
+      console.error("Failed to parse rules.json:", parseErr);
+      res.status(500).json({ error: "Failed to parse rules.json" });
+    }
+  });
+}
+
 module.exports = {
   getAllCompanies,
   getCompanyById,
@@ -408,4 +588,9 @@ module.exports = {
   storePosition,
   updatePosition,
   deletePosition,
+  getAllRules,
+  getRuleById,
+  storeRule,
+  updateRule,
+  deleteRule,
 };
