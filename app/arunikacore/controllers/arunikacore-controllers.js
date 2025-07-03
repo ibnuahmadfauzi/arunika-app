@@ -1,12 +1,6 @@
 const fs = require("fs");
 const path = require("path");
 
-const { MongoClient } = require("mongodb");
-
-// Ubah sesuai kebutuhan
-const url = "mongodb://127.0.0.1:27017";
-const dbName = "arunikacore_db";
-
 // ======================================================================================== //
 // ======================================================================================== //
 // ======================================================================================== //
@@ -25,160 +19,6 @@ function getCurrentTimestamp() {
   const seconds = String(now.getSeconds()).padStart(2, "0");
 
   return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
-}
-
-// ======================================================================================== //
-// ======================================================================================== //
-// ======================================================================================== //
-
-// Controller for Companies Data
-// Get All Companies Data
-async function getAllCompanies(req, res) {
-  const client = new MongoClient(url);
-
-  try {
-    await client.connect();
-    console.log("✅ Berhasil terkoneksi ke MongoDB");
-
-    const db = client.db(dbName);
-    const companies = await db.collection("companies").find({}).toArray();
-    res.json(companies);
-  } catch (err) {
-    res
-      .status(500)
-      .json({ error: "Failed to parse companies collections in database" });
-  } finally {
-    await client.close();
-  }
-}
-
-// Get Specific Company Data
-async function getCompanyById(req, res) {
-  const id = parseInt(req.params.id);
-  const client = new MongoClient(url);
-
-  try {
-    await client.connect();
-    console.log("✅ Berhasil terkoneksi ke MongoDB");
-
-    const db = client.db(dbName);
-    const company = await db.collection("companies").findOne({ id: id });
-
-    if (!company) {
-      return res.status(404).json({ error: "Company not found" });
-    }
-
-    res.json(company);
-  } catch (err) {
-    console.error("❌ Error saat mengambil data:", err);
-    res.status(500).json({ error: "Failed to get company from database" });
-  } finally {
-    await client.close();
-  }
-}
-
-// Store New Company Data
-async function storeCompany(req, res) {
-  const client = new MongoClient(url);
-
-  try {
-    await client.connect();
-    console.log("✅ Berhasil terkoneksi ke MongoDB");
-
-    const db = client.db(dbName);
-    let companyData = req.body;
-    const modifiedCompany = {
-      id: Math.floor(Math.random() * 10000000),
-      name: companyData.name || "Unnamed Company",
-      updated_at: "",
-      created_at: getCurrentTimestamp(),
-    };
-
-    const companies = await db
-      .collection("companies")
-      .insertOne(modifiedCompany, function (err, res) {
-        if (err) throw err;
-        console.log("1 document inserted");
-        db.close();
-      });
-    res.json(companies);
-  } catch (err) {
-    res
-      .status(500)
-      .json({ error: "Failed to parse companies collections in database" });
-  } finally {
-    await client.close();
-  }
-}
-
-// Update Company Data
-async function updateCompany(req, res) {
-  const client = new MongoClient(url);
-
-  try {
-    await client.connect();
-    console.log("✅ Berhasil terkoneksi ke MongoDB");
-
-    const db = client.db(dbName);
-    let companyData = req.body;
-
-    const companyId = parseInt(req.params.id);
-
-    let myquery = { id: companyId };
-    let newvalues = {
-      $set: {
-        name: companyData.name || "Unnamed Company",
-        updated_at: getCurrentTimestamp(),
-      },
-    };
-
-    const companies = await db
-      .collection("companies")
-      .updateOne(myquery, newvalues, function (err, res) {
-        if (err) throw err;
-        console.log("1 document updated");
-        db.close();
-      });
-    res.json(companies);
-  } catch (err) {
-    res
-      .status(500)
-      .json({ error: "Failed to parse companies collections in database" });
-  } finally {
-    await client.close();
-  }
-}
-
-// delete company data
-async function deleteCompany(req, res) {
-  const companyId = parseInt(req.params.id);
-  const client = new MongoClient(url);
-
-  try {
-    await client.connect();
-    console.log("✅ Berhasil terkoneksi ke MongoDB");
-
-    const db = client.db(dbName);
-    let myquery = { id: companyId };
-    const company = await db
-      .collection("companies")
-      .deleteOne(myquery, function (err, obj) {
-        if (err) throw err;
-        console.log("1 document deleted");
-        db.close();
-      });
-
-    if (!company) {
-      return res.status(404).json({ error: "Company not found" });
-    }
-
-    res.json(company);
-  } catch (err) {
-    console.error("❌ Error saat mengambil data:", err);
-    res.status(500).json({ error: "Failed to get company from database" });
-  } finally {
-    await client.close();
-  }
 }
 
 // ======================================================================================== //
@@ -744,11 +584,6 @@ function deleteUser(req, res) {
 // ======================================================================================== //
 
 module.exports = {
-  getAllCompanies,
-  getCompanyById,
-  storeCompany,
-  updateCompany,
-  deleteCompany,
   getAllPositions,
   getPositionById,
   storePosition,

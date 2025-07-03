@@ -34,7 +34,7 @@ const companiesData = [
   },
   {
     id: 3,
-    name: "Super User",
+    name: "Abyakta Darya",
     updated_at: "2025-07-02 11:52:48",
     created_at: "2025-07-01 10:50:00",
   },

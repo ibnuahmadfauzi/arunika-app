@@ -3,6 +3,7 @@ const router = express.Router();
 
 // import controllers
 const arunikaController = require("../controllers/arunikacore-controllers");
+const companiesController = require("../controllers/companies-controller");
 
 // Middleware specific to this router
 router.use((req, res, next) => {
@@ -20,15 +21,15 @@ router.get("/", (req, res) => {
 // ======================================================================================== //
 // Route for companies
 // GET : all companies
-router.get("/companies", arunikaController.getAllCompanies);
+router.get("/companies", companiesController.getAllCompanies);
 // GET : 1 company
-router.get("/companies/:id", arunikaController.getCompanyById);
+router.get("/companies/:id", companiesController.getCompanyById);
 // POST : add 1 company data
-router.post("/companies", arunikaController.storeCompany);
+router.post("/companies", companiesController.storeCompany);
 // PUT : update 1 company data by ID
-router.put("/companies/:id", arunikaController.updateCompany);
+router.put("/companies/:id", companiesController.updateCompany);
 // DELETE : delete 1 company data by ID
-router.delete("/companies/:id", arunikaController.deleteCompany);
+router.delete("/companies/:id", companiesController.deleteCompany);
 // ======================================================================================== //
 // ======================================================================================== //
 // ======================================================================================== //
