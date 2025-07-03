@@ -74,5 +74,8 @@ router.post("/users", usersController.storeUser);
 router.put("/users/:id", usersController.updateUser);
 // DELETE : delete 1 user data by ID
 router.delete("/users/:id", usersController.deleteUser);
+// ======================================================================================== //
+// ======================================================================================== //
+// ======================================================================================== //
 
 module.exports = router;

@@ -1,9 +1,10 @@
 // import package
 const { MongoClient } = require("mongodb");
+require("dotenv").config();
 
 // create url and namedb variable
-const url = "mongodb://127.0.0.1:27017";
-const dbName = "arunikacore_db";
+const url = process.env.MONGODB_URI;
+const dbName = process.env.DB_ARUNIKACORE;
 
 // Universal Function
 // get time for updated_at and created_at
