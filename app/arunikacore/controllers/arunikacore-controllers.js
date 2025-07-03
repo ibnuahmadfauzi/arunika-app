@@ -12,7 +12,6 @@ const dbName = "arunikacore_db";
 // ======================================================================================== //
 
 // Universal Function
-
 // get time for updated_at and created_at
 function getCurrentTimestamp() {
   const now = new Date();
@@ -113,50 +112,86 @@ async function storeCompany(req, res) {
 }
 
 // Update Company Data
-function updateCompany(req, res) {
-  const filePath = path.join(__dirname, "../../../data/companies.json");
-  const companyId = parseInt(req.params.id);
-  const updatedData = req.body;
+async function updateCompany(req, res) {
+  const client = new MongoClient(url);
 
-  fs.readFile(filePath, "utf8", (err, data) => {
-    if (err) {
-      console.error("Failed to read file:", err);
-      return res.status(500).json({ error: "Internal Server Error" });
-    }
+  try {
+    await client.connect();
+    console.log("✅ Berhasil terkoneksi ke MongoDB");
 
-    try {
-      let companies = JSON.parse(data);
-      const index = companies.findIndex((c) => c.id === companyId);
+    const db = client.db(dbName);
+    let companyData = req.body;
 
-      if (index === -1) {
-        return res.status(404).json({ error: "Company not found" });
-      }
+    const companyId = parseInt(req.params.id);
 
-      // Update data & set updated_at timestamp
-      companies[index] = {
-        ...companies[index],
-        ...updatedData,
+    let myquery = { id: companyId };
+    let newvalues = {
+      $set: {
+        name: companyData.name || "Unnamed Company",
         updated_at: getCurrentTimestamp(),
-      };
+      },
+    };
 
-      // Simpan kembali ke file
-      fs.writeFile(filePath, JSON.stringify(companies, null, 2), (writeErr) => {
-        if (writeErr) {
-          console.error("Failed to write file:", writeErr);
-          return res.status(500).json({ error: "Failed to save data" });
-        }
-
-        res.json({
-          message: "Company updated successfully",
-          company: companies[index],
-        });
+    const companies = await db
+      .collection("companies")
+      .updateOne(myquery, newvalues, function (err, res) {
+        if (err) throw err;
+        console.log("1 document updated");
+        db.close();
       });
-    } catch (parseErr) {
-      console.error("Failed to parse companies.json:", parseErr);
-      res.status(500).json({ error: "Failed to parse companies.json" });
-    }
-  });
+    res.json(companies);
+  } catch (err) {
+    res
+      .status(500)
+      .json({ error: "Failed to parse companies collections in database" });
+  } finally {
+    await client.close();
+  }
 }
+// function updateCompany(req, res) {
+//   const filePath = path.join(__dirname, "../../../data/companies.json");
+//   const companyId = parseInt(req.params.id);
+//   const updatedData = req.body;
+
+//   fs.readFile(filePath, "utf8", (err, data) => {
+//     if (err) {
+//       console.error("Failed to read file:", err);
+//       return res.status(500).json({ error: "Internal Server Error" });
+//     }
+
+//     try {
+//       let companies = JSON.parse(data);
+//       const index = companies.findIndex((c) => c.id === companyId);
+
+//       if (index === -1) {
+//         return res.status(404).json({ error: "Company not found" });
+//       }
+
+//       // Update data & set updated_at timestamp
+//       companies[index] = {
+//         ...companies[index],
+//         ...updatedData,
+//         updated_at: getCurrentTimestamp(),
+//       };
+
+//       // Simpan kembali ke file
+//       fs.writeFile(filePath, JSON.stringify(companies, null, 2), (writeErr) => {
+//         if (writeErr) {
+//           console.error("Failed to write file:", writeErr);
+//           return res.status(500).json({ error: "Failed to save data" });
+//         }
+
+//         res.json({
+//           message: "Company updated successfully",
+//           company: companies[index],
+//         });
+//       });
+//     } catch (parseErr) {
+//       console.error("Failed to parse companies.json:", parseErr);
+//       res.status(500).json({ error: "Failed to parse companies.json" });
+//     }
+//   });
+// }
 
 // delete company data
 function deleteCompany(req, res) {
