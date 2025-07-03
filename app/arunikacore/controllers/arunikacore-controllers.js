@@ -1,6 +1,12 @@
 const fs = require("fs");
 const path = require("path");
 
+const { MongoClient } = require("mongodb");
+
+// Ubah sesuai kebutuhan
+const url = "mongodb://127.0.0.1:27017";
+const dbName = "arunikacore_db";
+
 // ======================================================================================== //
 // ======================================================================================== //
 // ======================================================================================== //
@@ -28,96 +34,82 @@ function getCurrentTimestamp() {
 
 // Controller for Companies Data
 // Get All Companies Data
-function getAllCompanies(req, res) {
-  const filePath = path.join(__dirname, "../../../data/companies.json");
+async function getAllCompanies(req, res) {
+  const client = new MongoClient(url);
 
-  fs.readFile(filePath, "utf8", (err, data) => {
-    if (err) {
-      console.error("Failed to read file:", err);
-      return res.status(500).json({ error: "Internal Server Error" });
-    }
+  try {
+    await client.connect();
+    console.log("✅ Berhasil terkoneksi ke MongoDB");
 
-    try {
-      const companies = JSON.parse(data);
-      res.json(companies);
-    } catch (parseErr) {
-      res.status(500).json({ error: "Failed to parse companies.json" });
-    }
-  });
+    const db = client.db(dbName);
+    const companies = await db.collection("companies").find({}).toArray();
+    res.json(companies);
+  } catch (err) {
+    res
+      .status(500)
+      .json({ error: "Failed to parse companies collections in database" });
+  } finally {
+    await client.close();
+  }
 }
 
 // Get Specific Company Data
-function getCompanyById(req, res) {
-  const filePath = path.join(__dirname, "../../../data/companies.json");
+async function getCompanyById(req, res) {
   const id = parseInt(req.params.id);
+  const client = new MongoClient(url);
 
-  fs.readFile(filePath, "utf8", (err, data) => {
-    if (err) {
-      console.error("Failed to read file:", err);
-      return res.status(500).json({ error: "Internal Server Error" });
+  try {
+    await client.connect();
+    console.log("✅ Berhasil terkoneksi ke MongoDB");
+
+    const db = client.db(dbName);
+    const company = await db.collection("companies").findOne({ id: id });
+
+    if (!company) {
+      return res.status(404).json({ error: "Company not found" });
     }
 
-    try {
-      const companies = JSON.parse(data);
-      const company = companies.find((c) => c.id === id);
-
-      if (!company) {
-        return res.status(404).json({ error: "Company not found" });
-      }
-
-      res.json(company);
-    } catch (parseErr) {
-      res.status(500).json({ error: "Failed to parse companies.json" });
-    }
-  });
+    res.json(company);
+  } catch (err) {
+    console.error("❌ Error saat mengambil data:", err);
+    res.status(500).json({ error: "Failed to get company from database" });
+  } finally {
+    await client.close();
+  }
 }
 
 // Store New Company Data
-function storeCompany(req, res) {
-  const filePath = path.join(__dirname, "../../../data/companies.json");
+async function storeCompany(req, res) {
+  const client = new MongoClient(url);
 
-  // Ambil data baru dari request
-  const newCompany = req.body;
+  try {
+    await client.connect();
+    console.log("✅ Berhasil terkoneksi ke MongoDB");
 
-  // Baca file JSON dulu untuk mendapatkan id terakhir
-  fs.readFile(filePath, "utf8", (err, data) => {
-    if (err) {
-      console.error("Failed to read file:", err);
-      return res.status(500).json({ error: "Internal Server Error" });
-    }
+    const db = client.db(dbName);
+    let companyData = req.body;
+    const modifiedCompany = {
+      id: Math.floor(Math.random() * 10000000),
+      name: companyData.name || "Unnamed Company",
+      updated_at: "",
+      created_at: getCurrentTimestamp(),
+    };
 
-    try {
-      const companies = JSON.parse(data);
-      const lastId =
-        companies.length > 0 ? companies[companies.length - 1].id : 0;
-
-      // Tambahkan data tambahan
-      const modifiedCompany = {
-        id: lastId + 1,
-        name: newCompany.name || "Unnamed Company",
-        updated_at: "", // bisa nanti diisi waktu update
-        created_at: getCurrentTimestamp(),
-      };
-
-      // Simpan ke array dan tulis ulang ke file
-      companies.push(modifiedCompany);
-
-      fs.writeFile(filePath, JSON.stringify(companies, null, 2), (writeErr) => {
-        if (writeErr) {
-          console.error("Failed to write file:", writeErr);
-          return res.status(500).json({ error: "Failed to save data" });
-        }
-
-        res.status(201).json({
-          message: "Company saved",
-          company: modifiedCompany,
-        });
+    const companies = await db
+      .collection("companies")
+      .insertOne(modifiedCompany, function (err, res) {
+        if (err) throw err;
+        console.log("1 document inserted");
+        db.close();
       });
-    } catch (parseErr) {
-      console.error("Failed to parse companies.json:", parseErr);
-      res.status(500).json({ error: "Failed to parse companies.json" });
-    }
-  });
+    res.json(companies);
+  } catch (err) {
+    res
+      .status(500)
+      .json({ error: "Failed to parse companies collections in database" });
+  } finally {
+    await client.close();
+  }
 }
 
 // Update Company Data
