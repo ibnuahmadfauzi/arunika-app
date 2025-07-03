@@ -4,6 +4,21 @@ const url = "mongodb://127.0.0.1:27017";
 const dbName = "arunikacore_db";
 const client = new MongoClient(url);
 
+async function createDatabase() {
+  try {
+    await client.connect();
+    const db = client.db(dbName);
+
+    // Membuat collection kosong untuk memicu pembuatan database
+    await db.createCollection("dummy_init");
+    await db.collection("dummy_init").drop(); // Hapus lagi jika tidak dibutuhkan
+
+    console.log(`✅ Database "${dbName}" berhasil dibuat (jika belum ada)`);
+  } catch (err) {
+    console.error("❌ Gagal membuat database:", err);
+  }
+}
+
 const companiesData = [
   {
     id: 1,
@@ -55,4 +70,9 @@ async function seedCompanies() {
   }
 }
 
-seedCompanies();
+async function main() {
+  await createDatabase();
+  await seedCompanies();
+}
+
+main();
