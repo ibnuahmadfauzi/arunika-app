@@ -148,90 +148,37 @@ async function updateCompany(req, res) {
     await client.close();
   }
 }
-// function updateCompany(req, res) {
-//   const filePath = path.join(__dirname, "../../../data/companies.json");
-//   const companyId = parseInt(req.params.id);
-//   const updatedData = req.body;
-
-//   fs.readFile(filePath, "utf8", (err, data) => {
-//     if (err) {
-//       console.error("Failed to read file:", err);
-//       return res.status(500).json({ error: "Internal Server Error" });
-//     }
-
-//     try {
-//       let companies = JSON.parse(data);
-//       const index = companies.findIndex((c) => c.id === companyId);
-
-//       if (index === -1) {
-//         return res.status(404).json({ error: "Company not found" });
-//       }
-
-//       // Update data & set updated_at timestamp
-//       companies[index] = {
-//         ...companies[index],
-//         ...updatedData,
-//         updated_at: getCurrentTimestamp(),
-//       };
-
-//       // Simpan kembali ke file
-//       fs.writeFile(filePath, JSON.stringify(companies, null, 2), (writeErr) => {
-//         if (writeErr) {
-//           console.error("Failed to write file:", writeErr);
-//           return res.status(500).json({ error: "Failed to save data" });
-//         }
-
-//         res.json({
-//           message: "Company updated successfully",
-//           company: companies[index],
-//         });
-//       });
-//     } catch (parseErr) {
-//       console.error("Failed to parse companies.json:", parseErr);
-//       res.status(500).json({ error: "Failed to parse companies.json" });
-//     }
-//   });
-// }
 
 // delete company data
-function deleteCompany(req, res) {
-  const filePath = path.join(__dirname, "../../../data/companies.json");
+async function deleteCompany(req, res) {
   const companyId = parseInt(req.params.id);
+  const client = new MongoClient(url);
 
-  fs.readFile(filePath, "utf8", (err, data) => {
-    if (err) {
-      console.error("Failed to read file:", err);
-      return res.status(500).json({ error: "Internal Server Error" });
-    }
+  try {
+    await client.connect();
+    console.log("✅ Berhasil terkoneksi ke MongoDB");
 
-    try {
-      let companies = JSON.parse(data);
-      const index = companies.findIndex((c) => c.id === companyId);
-
-      if (index === -1) {
-        return res.status(404).json({ error: "Company not found" });
-      }
-
-      // Hapus company dari array
-      const deletedCompany = companies.splice(index, 1)[0];
-
-      // Simpan ulang ke file
-      fs.writeFile(filePath, JSON.stringify(companies, null, 2), (writeErr) => {
-        if (writeErr) {
-          console.error("Failed to write file:", writeErr);
-          return res.status(500).json({ error: "Failed to delete company" });
-        }
-
-        res.json({
-          message: "Company deleted successfully",
-          deleted: deletedCompany,
-        });
+    const db = client.db(dbName);
+    let myquery = { id: companyId };
+    const company = await db
+      .collection("companies")
+      .deleteOne(myquery, function (err, obj) {
+        if (err) throw err;
+        console.log("1 document deleted");
+        db.close();
       });
-    } catch (parseErr) {
-      console.error("Failed to parse companies.json:", parseErr);
-      res.status(500).json({ error: "Failed to parse companies.json" });
+
+    if (!company) {
+      return res.status(404).json({ error: "Company not found" });
     }
-  });
+
+    res.json(company);
+  } catch (err) {
+    console.error("❌ Error saat mengambil data:", err);
+    res.status(500).json({ error: "Failed to get company from database" });
+  } finally {
+    await client.close();
+  }
 }
 
 // ======================================================================================== //
