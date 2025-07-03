@@ -4,6 +4,7 @@ const router = express.Router();
 // import controllers
 const arunikaController = require("../controllers/arunikacore-controllers");
 const companiesController = require("../controllers/companies-controller");
+const positionController = require("../controllers/positions-controller");
 
 // Middleware specific to this router
 router.use((req, res, next) => {
@@ -35,15 +36,15 @@ router.delete("/companies/:id", companiesController.deleteCompany);
 // ======================================================================================== //
 // Route for positions
 // GET : all positions
-router.get("/positions", arunikaController.getAllPositions);
+router.get("/positions", positionController.getAllPositions);
 // GET : 1 position
-router.get("/positions/:id", arunikaController.getPositionById);
+router.get("/positions/:id", positionController.getPositionById);
 // POST : add 1 position data
-router.post("/positions", arunikaController.storePosition);
+router.post("/positions", positionController.storePosition);
 // PUT : update 1 position data by ID
-router.put("/positions/:id", arunikaController.updatePosition);
+router.put("/positions/:id", positionController.updatePosition);
 // DELETE : delete 1 position data by ID
-router.delete("/positions/:id", arunikaController.deletePosition);
+router.delete("/positions/:id", positionController.deletePosition);
 // ======================================================================================== //
 // ======================================================================================== //
 // ======================================================================================== //
