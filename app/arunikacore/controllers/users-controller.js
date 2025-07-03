@@ -1,9 +1,9 @@
-const fs = require("fs");
-const path = require("path");
+// import package
+const { MongoClient } = require("mongodb");
 
-// ======================================================================================== //
-// ======================================================================================== //
-// ======================================================================================== //
+// create url and namedb variable
+const url = "mongodb://127.0.0.1:27017";
+const dbName = "arunikacore_db";
 
 // Universal Function
 // get time for updated_at and created_at
@@ -21,188 +21,161 @@ function getCurrentTimestamp() {
   return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
 }
 
-// Controller for User Data
-// Get All User Data
-function getAllUsers(req, res) {
-  const filePath = path.join(__dirname, "../../../data/users.json");
+// get all users data from database
+async function getAllUsers(req, res) {
+  const client = new MongoClient(url);
 
-  fs.readFile(filePath, "utf8", (err, data) => {
-    if (err) {
-      console.error("Failed to read file:", err);
-      return res.status(500).json({ error: "Internal Server Error" });
-    }
+  try {
+    await client.connect();
+    console.log("✅ Berhasil terkoneksi ke MongoDB");
 
-    try {
-      const users = JSON.parse(data);
-      res.json(users);
-    } catch (parseErr) {
-      res.status(500).json({ error: "Failed to parse users.json" });
-    }
-  });
+    const db = client.db(dbName);
+    const users = await db.collection("users").find({}).toArray();
+    res.json(users);
+  } catch (err) {
+    res
+      .status(500)
+      .json({ error: "Failed to parse users collections in database" });
+  } finally {
+    await client.close();
+  }
 }
 
-// Get Specific User Data
-function getUserById(req, res) {
-  const filePath = path.join(__dirname, "../../../data/users.json");
+// get specifc user data by id from database
+async function getUserById(req, res) {
   const id = parseInt(req.params.id);
+  const client = new MongoClient(url);
 
-  fs.readFile(filePath, "utf8", (err, data) => {
-    if (err) {
-      console.error("Failed to read file:", err);
-      return res.status(500).json({ error: "Internal Server Error" });
+  try {
+    await client.connect();
+    console.log("✅ Berhasil terkoneksi ke MongoDB");
+
+    const db = client.db(dbName);
+    const user = await db.collection("users").findOne({ id: id });
+
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
     }
 
-    try {
-      const users = JSON.parse(data);
-      const user = users.find((c) => c.id === id);
-
-      if (!user) {
-        return res.status(404).json({ error: "User not found" });
-      }
-
-      res.json(user);
-    } catch (parseErr) {
-      res.status(500).json({ error: "Failed to parse users.json" });
-    }
-  });
+    res.json(user);
+  } catch (err) {
+    console.error("❌ Error saat mengambil data:", err);
+    res.status(500).json({ error: "Failed to get user from database" });
+  } finally {
+    await client.close();
+  }
 }
 
-// Store New User Data
-function storeUser(req, res) {
-  const filePath = path.join(__dirname, "../../../data/users.json");
+// store new user data to database
+async function storeUser(req, res) {
+  const client = new MongoClient(url);
 
-  // Ambil data baru dari request
-  const newUser = req.body;
+  try {
+    await client.connect();
+    console.log("✅ Berhasil terkoneksi ke MongoDB");
 
-  // Baca file JSON dulu untuk mendapatkan id terakhir
-  fs.readFile(filePath, "utf8", (err, data) => {
-    if (err) {
-      console.error("Failed to read file:", err);
-      return res.status(500).json({ error: "Internal Server Error" });
-    }
+    const db = client.db(dbName);
+    let userData = req.body;
+    const modifiedUser = {
+      id: Math.floor(Math.random() * 10000000),
+      name: userData.name || "Empty Name",
+      email: userData.email || "Empty Email",
+      password: userData.password || "Empty Password",
+      role_id: userData.role_id || "Empty",
+      position_id: userData.position_id || "Empty",
+      updated_at: "",
+      created_at: getCurrentTimestamp(),
+    };
 
-    try {
-      const users = JSON.parse(data);
-      const lastId = users.length > 0 ? users[users.length - 1].id : 0;
-
-      // Tambahkan data tambahan
-      const modifiedUser = {
-        id: lastId + 1,
-        name: newUser.name || "Unnamed User",
-        email: newUser.email || "Empty Email",
-        password: newUser.password || "Empty Password",
-        role_id: newUser.role_id || "Not Set",
-        position_id: newUser.position_id || "Not Set",
-        updated_at: "", // bisa nanti diisi waktu update
-        created_at: getCurrentTimestamp(),
-      };
-
-      // Simpan ke array dan tulis ulang ke file
-      users.push(modifiedUser);
-
-      fs.writeFile(filePath, JSON.stringify(users, null, 2), (writeErr) => {
-        if (writeErr) {
-          console.error("Failed to write file:", writeErr);
-          return res.status(500).json({ error: "Failed to save data" });
-        }
-
-        res.status(201).json({
-          message: "User saved",
-          user: modifiedUser,
-        });
+    const users = await db
+      .collection("users")
+      .insertOne(modifiedUser, function (err, res) {
+        if (err) throw err;
+        console.log("1 document inserted");
+        db.close();
       });
-    } catch (parseErr) {
-      console.error("Failed to parse users.json:", parseErr);
-      res.status(500).json({ error: "Failed to parse users.json" });
-    }
-  });
+    res.json(users);
+  } catch (err) {
+    res
+      .status(500)
+      .json({ error: "Failed to parse users collections in database" });
+  } finally {
+    await client.close();
+  }
 }
 
-// Update User Data
-function updateUser(req, res) {
-  const filePath = path.join(__dirname, "../../../data/users.json");
-  const userId = parseInt(req.params.id);
-  const updatedData = req.body;
+// update user data to database by id
+async function updateUser(req, res) {
+  const client = new MongoClient(url);
 
-  fs.readFile(filePath, "utf8", (err, data) => {
-    if (err) {
-      console.error("Failed to read file:", err);
-      return res.status(500).json({ error: "Internal Server Error" });
-    }
+  try {
+    await client.connect();
+    console.log("✅ Berhasil terkoneksi ke MongoDB");
 
-    try {
-      let users = JSON.parse(data);
-      const index = users.findIndex((c) => c.id === userId);
+    const db = client.db(dbName);
+    let userData = req.body;
 
-      if (index === -1) {
-        return res.status(404).json({ error: "User not found" });
-      }
+    const userId = parseInt(req.params.id);
 
-      // Update data & set updated_at timestamp
-      users[index] = {
-        ...users[index],
-        ...updatedData,
+    let myquery = { id: userId };
+    let newvalues = {
+      $set: {
+        name: userData.name || "Empty Name",
+        email: userData.email || "Empty Email",
+        password: userData.password || "Empty Password",
+        role_id: userData.role_id || "Empty",
+        position_id: userData.position_id || "Empty",
         updated_at: getCurrentTimestamp(),
-      };
+      },
+    };
 
-      // Simpan kembali ke file
-      fs.writeFile(filePath, JSON.stringify(users, null, 2), (writeErr) => {
-        if (writeErr) {
-          console.error("Failed to write file:", writeErr);
-          return res.status(500).json({ error: "Failed to save data" });
-        }
-
-        res.json({
-          message: "User updated successfully",
-          user: users[index],
-        });
+    const users = await db
+      .collection("users")
+      .updateOne(myquery, newvalues, function (err, res) {
+        if (err) throw err;
+        console.log("1 document updated");
+        db.close();
       });
-    } catch (parseErr) {
-      console.error("Failed to parse users.json:", parseErr);
-      res.status(500).json({ error: "Failed to parse users.json" });
-    }
-  });
+    res.json(users);
+  } catch (err) {
+    res
+      .status(500)
+      .json({ error: "Failed to parse users collections in database" });
+  } finally {
+    await client.close();
+  }
 }
 
-// delete user data
-function deleteUser(req, res) {
-  const filePath = path.join(__dirname, "../../../data/users.json");
+// delete user data in database by id
+async function deleteUser(req, res) {
   const userId = parseInt(req.params.id);
+  const client = new MongoClient(url);
 
-  fs.readFile(filePath, "utf8", (err, data) => {
-    if (err) {
-      console.error("Failed to read file:", err);
-      return res.status(500).json({ error: "Internal Server Error" });
-    }
+  try {
+    await client.connect();
+    console.log("✅ Berhasil terkoneksi ke MongoDB");
 
-    try {
-      let users = JSON.parse(data);
-      const index = users.findIndex((c) => c.id === userId);
-
-      if (index === -1) {
-        return res.status(404).json({ error: "User not found" });
-      }
-
-      // Hapus user dari array
-      const deletedUser = users.splice(index, 1)[0];
-
-      // Simpan ulang ke file
-      fs.writeFile(filePath, JSON.stringify(users, null, 2), (writeErr) => {
-        if (writeErr) {
-          console.error("Failed to write file:", writeErr);
-          return res.status(500).json({ error: "Failed to delete user" });
-        }
-
-        res.json({
-          message: "User deleted successfully",
-          deleted: deletedUser,
-        });
+    const db = client.db(dbName);
+    let myquery = { id: userId };
+    const user = await db
+      .collection("users")
+      .deleteOne(myquery, function (err, obj) {
+        if (err) throw err;
+        console.log("1 document deleted");
+        db.close();
       });
-    } catch (parseErr) {
-      console.error("Failed to parse users.json:", parseErr);
-      res.status(500).json({ error: "Failed to parse users.json" });
+
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
     }
-  });
+
+    res.json(user);
+  } catch (err) {
+    console.error("❌ Error saat mengambil data:", err);
+    res.status(500).json({ error: "Failed to get user from database" });
+  } finally {
+    await client.close();
+  }
 }
 
 module.exports = {
