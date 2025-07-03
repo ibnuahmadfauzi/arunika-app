@@ -2,7 +2,6 @@ const express = require("express");
 const router = express.Router();
 
 // import controllers
-const arunikaController = require("../controllers/arunikacore-controllers");
 const companiesController = require("../controllers/companies-controller");
 const positionsController = require("../controllers/positions-controller");
 const rulesController = require("../controllers/rules-controller");
