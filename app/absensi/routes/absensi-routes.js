@@ -3,6 +3,7 @@ const router = express.Router();
 
 // import controller
 const checkInController = require("../controllers/checkin-controllers");
+const checkOutController = require("../controllers/checkout-controllers");
 
 // Middleware specific to this router
 router.use((req, res, next) => {
@@ -16,5 +17,6 @@ router.get("/", (req, res) => {
 });
 
 router.post("/checkin", checkInController.checkIn);
+router.put("/checkout/:id", checkOutController.checkOut);
 
 module.exports = router;
