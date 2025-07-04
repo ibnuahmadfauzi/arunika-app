@@ -1,5 +1,6 @@
 // import package
 const { MongoClient } = require("mongodb");
+const { ObjectId } = require("mongodb");
 require("dotenv").config();
 
 // create url and namedb variable
@@ -44,7 +45,7 @@ async function getAllRules(req, res) {
 
 // get specifc rule data by id from database
 async function getRuleById(req, res) {
-  const id = parseInt(req.params.id);
+  const id = req.params.id;
   const client = new MongoClient(url);
 
   try {
@@ -52,7 +53,9 @@ async function getRuleById(req, res) {
     console.log("✅ Berhasil terkoneksi ke MongoDB");
 
     const db = client.db(dbName);
-    const rule = await db.collection("rules").findOne({ id: id });
+    const rule = await db
+      .collection("rules")
+      .findOne({ _id: new ObjectId(id) });
 
     if (!rule) {
       return res.status(404).json({ error: "Rule not found" });
@@ -78,7 +81,6 @@ async function storeRule(req, res) {
     const db = client.db(dbName);
     let ruleData = req.body;
     const modifiedRule = {
-      id: Math.floor(Math.random() * 10000000),
       name: ruleData.name || "Unnamed Rule",
       updated_at: "",
       created_at: getCurrentTimestamp(),
@@ -112,9 +114,9 @@ async function updateRule(req, res) {
     const db = client.db(dbName);
     let ruleData = req.body;
 
-    const ruleId = parseInt(req.params.id);
+    const ruleId = req.params.id;
 
-    let myquery = { id: ruleId };
+    let myquery = { _id: new ObjectId(ruleId) };
     let newvalues = {
       $set: {
         name: ruleData.name || "Unnamed Rule",
@@ -141,7 +143,7 @@ async function updateRule(req, res) {
 
 // delete rule data in database by id
 async function deleteRule(req, res) {
-  const ruleId = parseInt(req.params.id);
+  const ruleId = req.params.id;
   const client = new MongoClient(url);
 
   try {
@@ -149,7 +151,7 @@ async function deleteRule(req, res) {
     console.log("✅ Berhasil terkoneksi ke MongoDB");
 
     const db = client.db(dbName);
-    let myquery = { id: ruleId };
+    let myquery = { _id: new ObjectId(ruleId) };
     const rule = await db
       .collection("rules")
       .deleteOne(myquery, function (err, obj) {
