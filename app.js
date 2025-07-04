@@ -20,7 +20,7 @@ app.use(sessionConfig);
 
 // route
 app.use("/auth", authRouter);
-app.use("/absensi", absensiRouter);
+app.use("/absensi", requireLogin, absensiRouter);
 app.use("/arunikacore", requireLogin, arunikaCoreRouter);
 
 app.get("/", (req, res) => {

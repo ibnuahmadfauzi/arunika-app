@@ -3,6 +3,7 @@ const companiesData = require("../data/companies.json");
 const positionsData = require("../data/positions.json");
 const rulesData = require("../data/rules.json");
 const usersData = require("../data/users.json");
+const attendancesData = require("../data/attendances.json");
 
 const url = "mongodb://127.0.0.1:27017";
 const dbName = "arunikacore_db";
@@ -20,6 +21,30 @@ async function createDatabase() {
     console.log(`✅ Database "${dbName}" berhasil dibuat (jika belum ada)`);
   } catch (err) {
     console.error("❌ Gagal membuat database:", err);
+  }
+}
+
+async function seedAttendances() {
+  try {
+    await client.connect();
+    console.log("✅ Terkoneksi ke MongoDB");
+
+    const db = client.db(dbName);
+    const collection = db.collection("attendances");
+
+    // Hapus collection jika sudah ada
+    await collection.deleteMany({});
+
+    // Masukkan data baru
+    const result = await collection.insertMany(attendancesData);
+    console.log(
+      `✅ ${result.insertedCount} data berhasil ditambahkan ke koleksi "attendances"`
+    );
+  } catch (err) {
+    console.error("❌ Gagal melakukan seeding:", err);
+  } finally {
+    await client.close();
+    console.log("🔌 Koneksi MongoDB ditutup");
   }
 }
 
@@ -121,6 +146,7 @@ async function seedUsers() {
 
 async function main() {
   await createDatabase();
+  await seedAttendances();
   await seedRules();
   await seedUsers();
   await seedPositions();
