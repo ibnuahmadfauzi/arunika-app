@@ -12,7 +12,7 @@ router.use((req, res, next) => {
 
 // GET absensi "/"
 router.get("/", (req, res) => {
-  res.send("Absensi: HomePage");
+  res.send("tes");
 });
 
 router.post("/checkin", checkInController.checkIn);
