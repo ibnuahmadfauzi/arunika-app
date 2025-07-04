@@ -1,5 +1,6 @@
 // import package
 const { MongoClient } = require("mongodb");
+const { ObjectId } = require("mongodb");
 require("dotenv").config();
 
 // create url and namedb variable
@@ -44,7 +45,7 @@ async function getAllCompanies(req, res) {
 
 // get specifc company data by id from database
 async function getCompanyById(req, res) {
-  const id = parseInt(req.params.id);
+  const id = req.params.id;
   const client = new MongoClient(url);
 
   try {
@@ -52,7 +53,9 @@ async function getCompanyById(req, res) {
     console.log("✅ Berhasil terkoneksi ke MongoDB");
 
     const db = client.db(dbName);
-    const company = await db.collection("companies").findOne({ id: id });
+    const company = await db
+      .collection("companies")
+      .findOne({ _id: new ObjectId(id) });
 
     if (!company) {
       return res.status(404).json({ error: "Company not found" });
@@ -78,7 +81,6 @@ async function storeCompany(req, res) {
     const db = client.db(dbName);
     let companyData = req.body;
     const modifiedCompany = {
-      id: Math.floor(Math.random() * 10000000),
       name: companyData.name || "Unnamed Company",
       updated_at: "",
       created_at: getCurrentTimestamp(),
@@ -112,9 +114,9 @@ async function updateCompany(req, res) {
     const db = client.db(dbName);
     let companyData = req.body;
 
-    const companyId = parseInt(req.params.id);
+    const companyId = req.params.id;
 
-    let myquery = { id: companyId };
+    let myquery = { _id: new ObjectId(companyId) };
     let newvalues = {
       $set: {
         name: companyData.name || "Unnamed Company",
@@ -141,7 +143,7 @@ async function updateCompany(req, res) {
 
 // delete company data in database by id
 async function deleteCompany(req, res) {
-  const companyId = parseInt(req.params.id);
+  const companyId = req.params.id;
   const client = new MongoClient(url);
 
   try {
@@ -149,7 +151,7 @@ async function deleteCompany(req, res) {
     console.log("✅ Berhasil terkoneksi ke MongoDB");
 
     const db = client.db(dbName);
-    let myquery = { id: companyId };
+    let myquery = { _id: new ObjectId(companyId) };
     const company = await db
       .collection("companies")
       .deleteOne(myquery, function (err, obj) {
