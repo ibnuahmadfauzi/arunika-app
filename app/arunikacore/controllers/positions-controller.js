@@ -1,5 +1,6 @@
 // import package
 const { MongoClient } = require("mongodb");
+const { ObjectId } = require("mongodb");
 require("dotenv").config();
 
 // create url and namedb variable
@@ -44,7 +45,7 @@ async function getAllPositions(req, res) {
 
 // get specifc position data by id from database
 async function getPositionById(req, res) {
-  const id = parseInt(req.params.id);
+  const id = req.params.id;
   const client = new MongoClient(url);
 
   try {
@@ -52,7 +53,9 @@ async function getPositionById(req, res) {
     console.log("✅ Berhasil terkoneksi ke MongoDB");
 
     const db = client.db(dbName);
-    const position = await db.collection("positions").findOne({ id: id });
+    const position = await db
+      .collection("positions")
+      .findOne({ _id: new ObjectId(id) });
 
     if (!position) {
       return res.status(404).json({ error: "Position not found" });
@@ -78,7 +81,6 @@ async function storePosition(req, res) {
     const db = client.db(dbName);
     let positionData = req.body;
     const modifiedPosition = {
-      id: Math.floor(Math.random() * 10000000),
       name: positionData.name || "Unnamed Position",
       company_id: positionData.company_id || "Empty",
       updated_at: "",
@@ -113,9 +115,9 @@ async function updatePosition(req, res) {
     const db = client.db(dbName);
     let positionData = req.body;
 
-    const positionId = parseInt(req.params.id);
+    const positionId = req.params.id;
 
-    let myquery = { id: positionId };
+    let myquery = { _id: new ObjectId(positionId) };
     let newvalues = {
       $set: {
         name: positionData.name || "Unnamed Position",
@@ -143,7 +145,7 @@ async function updatePosition(req, res) {
 
 // delete position data in database by id
 async function deletePosition(req, res) {
-  const positionId = parseInt(req.params.id);
+  const positionId = req.params.id;
   const client = new MongoClient(url);
 
   try {
@@ -151,7 +153,7 @@ async function deletePosition(req, res) {
     console.log("✅ Berhasil terkoneksi ke MongoDB");
 
     const db = client.db(dbName);
-    let myquery = { id: positionId };
+    let myquery = { _id: new ObjectId(positionId) };
     const position = await db
       .collection("positions")
       .deleteOne(myquery, function (err, obj) {
