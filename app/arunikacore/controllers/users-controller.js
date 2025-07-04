@@ -1,5 +1,6 @@
 // import package
 const { MongoClient } = require("mongodb");
+const { ObjectId } = require("mongodb");
 require("dotenv").config();
 
 // create url and namedb variable
@@ -44,7 +45,7 @@ async function getAllUsers(req, res) {
 
 // get specifc user data by id from database
 async function getUserById(req, res) {
-  const id = parseInt(req.params.id);
+  const id = req.params.id;
   const client = new MongoClient(url);
 
   try {
@@ -52,7 +53,9 @@ async function getUserById(req, res) {
     console.log("✅ Berhasil terkoneksi ke MongoDB");
 
     const db = client.db(dbName);
-    const user = await db.collection("users").findOne({ id: id });
+    const user = await db
+      .collection("users")
+      .findOne({ _id: new ObjectId(id) });
 
     if (!user) {
       return res.status(404).json({ error: "User not found" });
@@ -78,7 +81,6 @@ async function storeUser(req, res) {
     const db = client.db(dbName);
     let userData = req.body;
     const modifiedUser = {
-      id: Math.floor(Math.random() * 10000000),
       name: userData.name || "Empty Name",
       email: userData.email || "Empty Email",
       password: userData.password || "Empty Password",
@@ -116,9 +118,9 @@ async function updateUser(req, res) {
     const db = client.db(dbName);
     let userData = req.body;
 
-    const userId = parseInt(req.params.id);
+    const userId = req.params.id;
 
-    let myquery = { id: userId };
+    let myquery = { _id: new ObjectId(userId) };
     let newvalues = {
       $set: {
         name: userData.name || "Empty Name",
@@ -149,7 +151,7 @@ async function updateUser(req, res) {
 
 // delete user data in database by id
 async function deleteUser(req, res) {
-  const userId = parseInt(req.params.id);
+  const userId = req.params.id;
   const client = new MongoClient(url);
 
   try {
@@ -157,7 +159,7 @@ async function deleteUser(req, res) {
     console.log("✅ Berhasil terkoneksi ke MongoDB");
 
     const db = client.db(dbName);
-    let myquery = { id: userId };
+    let myquery = { _id: new ObjectId(userId) };
     const user = await db
       .collection("users")
       .deleteOne(myquery, function (err, obj) {
