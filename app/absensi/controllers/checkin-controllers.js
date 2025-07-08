@@ -24,7 +24,7 @@ async function checkIn(req, res) {
         description_out,
         photo_out
       ) VALUES (
-        1,
+        ${req.user.id},
         CURRENT_DATE,
         CURRENT_TIME,
         NULL,

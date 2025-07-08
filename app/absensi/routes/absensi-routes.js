@@ -13,7 +13,8 @@ router.use((req, res, next) => {
 
 // GET absensi "/"
 router.get("/", (req, res) => {
-  res.send("tes");
+  const user = req.user;
+  res.json(user);
 });
 
 router.post("/checkin", checkInController.checkIn);
