@@ -4,7 +4,7 @@ const router = express.Router();
 // import controllers
 const companiesController = require("../controllers/companies-controller");
 const positionsController = require("../controllers/positions-controller");
-const rulesController = require("../controllers/rules-controller");
+const rolesController = require("../controllers/roles-controller");
 const usersController = require("../controllers/users-controller");
 
 // Middleware specific to this router
@@ -51,15 +51,15 @@ router.delete("/positions/:id", positionsController.deletePosition);
 // ======================================================================================== //
 // Route for Users
 // GET : all rules
-router.get("/rules", rulesController.getAllRules);
-// GET : 1 rule
-router.get("/rules/:id", rulesController.getRuleById);
-// POST : add 1 rule data
-router.post("/rules", rulesController.storeRule);
-// PUT : update 1 rule data by ID
-router.put("/rules/:id", rulesController.updateRule);
-// DELETE : delete 1 rule data by ID
-router.delete("/rules/:id", rulesController.deleteRule);
+router.get("/roles", rolesController.getAllRoles);
+// GET : 1 role
+router.get("/roles/:id", rolesController.getRoleById);
+// POST : add 1 role data
+router.post("/roles", rolesController.storeRole);
+// PUT : update 1 role data by ID
+router.put("/roles/:id", rolesController.updateRole);
+// DELETE : delete 1 role data by ID
+router.delete("/roles/:id", rolesController.deleteRole);
 // ======================================================================================== //
 // ======================================================================================== //
 // ======================================================================================== //
