@@ -1,5 +1,5 @@
 // import package
-const pool = require("../../../config/db-pg"); // import koneksi database
+const pool = require("../../../config/db");
 require("dotenv").config();
 // user_id: req.session.user.id,
 
