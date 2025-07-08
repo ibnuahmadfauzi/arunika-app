@@ -1,58 +1,48 @@
 // import package
-const { MongoClient } = require("mongodb");
+const pool = require("../../../config/db-pg"); // import koneksi database
 require("dotenv").config();
-
-// create url and namedb variable
-const url = process.env.MONGODB_URI;
-const dbName = process.env.DB_ARUNIKACORE;
+// user_id: req.session.user.id,
 
 // function to checkin attendances
 async function checkIn(req, res) {
-  const now = new Date();
-  const year = now.getFullYear();
-  const month = String(now.getMonth() + 1).padStart(2, "0");
-  const day = String(now.getDate()).padStart(2, "0");
-
-  const hours = String(now.getHours()).padStart(2, "0");
-  const minutes = String(now.getMinutes()).padStart(2, "0");
-  const seconds = String(now.getSeconds()).padStart(2, "0");
-
-  const client = new MongoClient(url);
+  const checkInData = req.body;
 
   try {
-    await client.connect();
-    console.log("✅ Berhasil terkoneksi ke MongoDB");
-
-    const db = client.db(dbName);
-    let dataCheckin = {
-      user_id: req.session.user.id,
-      date: `${year}-${month}-${day}`,
-      check_in_time: `${hours}:${minutes}:${seconds}`,
-      check_out_time: "",
-      location_in_lat: req.body.location_in_lat,
-      location_in_long: req.body.location_in_long,
-      location_out_lat: "",
-      location_out_long: "",
-      description: req.body.description,
-      photo: req.body.photo,
-      new_description: "",
-      new_photo: "",
-    };
-
-    const attendances = await db
-      .collection("attendances")
-      .insertOne(dataCheckin, function (err, res) {
-        if (err) throw err;
-        console.log("1 document inserted");
-        db.close();
-      });
-    res.json(attendances);
+    const result = await pool.query(
+      `
+        INSERT INTO attendances (
+        user_id,
+        date,
+        check_in_time,
+        check_out_time,
+        location_in_lat,
+        location_in_long,
+        location_out_lat,
+        location_out_long,
+        description_in,
+        photo_in,
+        description_out,
+        photo_out
+      ) VALUES (
+        1,
+        CURRENT_DATE,
+        CURRENT_TIME,
+        NULL,
+        '${req.body.location_in_lat}',
+        '${req.body.location_in_long}',
+        NULL,
+        NULL,
+        '${req.body.description_in}',
+        '${req.body.photo_in}',
+        NULL,
+        NULL
+      );
+      `
+    );
+    res.json(result.rows);
   } catch (err) {
-    res
-      .status(500)
-      .json({ error: "Failed to parse attendances collections in database" });
-  } finally {
-    await client.close();
+    console.error(err);
+    res.status(500).send("Server error");
   }
 }
 
