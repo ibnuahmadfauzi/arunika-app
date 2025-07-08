@@ -1,14 +1,8 @@
-const { MongoClient } = require("mongodb");
+const { Pool } = require("pg");
+require("dotenv").config();
 
-const url = process.env.MONGODB_URI;
-const dbName = process.env.DB_ARUNIKACORE;
-const client = new MongoClient(url);
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+});
 
-async function connectDB() {
-  if (!client.topology || !client.topology.isConnected()) {
-    await client.connect();
-  }
-  return client.db(dbName);
-}
-
-module.exports = connectDB;
+module.exports = pool;
