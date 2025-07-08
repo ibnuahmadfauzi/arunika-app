@@ -4,6 +4,7 @@ const express = require("express");
 const absensiRouter = require("./app/absensi/routes/absensi-routes");
 const arunikaCoreRouter = require("./app/arunikacore/routes/arunikacore-routes");
 const authRouter = require("./app/auth/auth.routes");
+const authenticate = require("./app/auth/auth.middleware");
 
 const app = express();
 app.use(express.json());
@@ -12,8 +13,8 @@ const port = process.env.PORT || 8080;
 
 // routes
 app.use("/auth", authRouter);
-app.use("/absensi", absensiRouter);
-app.use("/arunikacore", arunikaCoreRouter);
+app.use("/absensi", authenticate, absensiRouter);
+app.use("/arunikacore", authenticate, arunikaCoreRouter);
 
 // root route
 app.get("/", (req, res) => {
