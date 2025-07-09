@@ -7,6 +7,7 @@ const absensiRouter = require("./app/absensi/routes/absensi-routes");
 const arunikaCoreRouter = require("./app/arunikacore/routes/arunikacore-routes");
 const authRouter = require("./app/auth/auth.routes");
 const authenticate = require("./app/auth/auth.middleware");
+const app = express();
 
 
 // Izinkan semua origin (untuk testing)
@@ -15,7 +16,6 @@ app.use(cors({
 }));
 
 
-const app = express();
 app.use(express.json());
 
 const port = process.env.PORT || 8080;
