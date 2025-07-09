@@ -1,10 +1,19 @@
 require("dotenv").config();
 const express = require("express");
+const cors = require("cors");
+
 
 const absensiRouter = require("./app/absensi/routes/absensi-routes");
 const arunikaCoreRouter = require("./app/arunikacore/routes/arunikacore-routes");
 const authRouter = require("./app/auth/auth.routes");
 const authenticate = require("./app/auth/auth.middleware");
+
+
+// Izinkan semua origin (untuk testing)
+app.use(cors({
+  origin: "http://127.0.0.1:5500"
+}));
+
 
 const app = express();
 app.use(express.json());
