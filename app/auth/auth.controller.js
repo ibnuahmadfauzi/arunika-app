@@ -1,6 +1,8 @@
 const pool = require("../../config/db");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const { options } = require("./auth.routes");
+const { json } = require("express");
 
 exports.register = async (req, res) => {
   const { name, email, password, role_id, position_id } = req.body;
@@ -35,7 +37,33 @@ exports.login = async (req, res) => {
       { expiresIn: "1d" }
     );
 
-    res.json({ token });
+    const options = {
+      maxAge : 60 * 3600, 
+    }
+
+    // set cookie client
+    res.cookie("SessionID", token, options)
+      .status(200)
+      .json({
+        status : "success",
+        data : {
+          "name" : user.name,
+          "email" : user.email,
+          "position" : "IT Staff"
+        },
+        message : "Login Berhasil",
+      });
+    // set response
+    // res.status(200).json({
+    //   status : "success",
+    //   data : {
+    //     "name" : user.name,
+    //     "email" : user.email,
+    //     "position" : "IT Staff"
+    //   },
+    //   message : "Login Berhasil",
+    // })
+    // res.json({ token });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
