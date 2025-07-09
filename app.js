@@ -1,6 +1,7 @@
 require("dotenv").config();
 const express = require("express");
 const cookiesParser = require("cookie-parser");
+const cors = require('cors');
 
 const absensiRouter = require("./app/absensi/routes/absensi-routes");
 const arunikaCoreRouter = require("./app/arunikacore/routes/arunikacore-routes");
@@ -10,6 +11,12 @@ const authenticate = require("./app/auth/auth.middleware");
 const app = express();
 app.use(express.json());
 app.use(cookiesParser());
+
+app.use(cors({
+  origin: '*',
+  credentials: true
+}));
+
 
 const port = process.env.PORT || 8080;
 
