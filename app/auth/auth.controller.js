@@ -39,7 +39,7 @@ exports.login = async (req, res) => {
 
     const options = {
       maxAge: 60 * 3600,
-      sameSite: none,
+      sameSite: "none",
       secure: false,
     };
 
