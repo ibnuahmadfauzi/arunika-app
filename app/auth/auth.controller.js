@@ -38,20 +38,23 @@ exports.login = async (req, res) => {
     );
 
     const options = {
-      maxAge : 60 * 3600, 
-    }
+      maxAge: 60 * 3600,
+      sameSite: none,
+      secure: false,
+    };
 
     // set cookie client
-    res.cookie("SessionID", token, options)
+    res
+      .cookie("SessionID", token, options)
       .status(200)
       .json({
-        status : "success",
-        data : {
-          "name" : user.name,
-          "email" : user.email,
-          "position" : "IT Staff"
+        status: "success",
+        data: {
+          name: user.name,
+          email: user.email,
+          position: "IT Staff",
         },
-        message : "Login Berhasil",
+        message: "Login Berhasil",
       });
     // set response
     // res.status(200).json({
