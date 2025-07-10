@@ -40,7 +40,7 @@ exports.login = async (req, res) => {
     const options = {
       maxAge: 60 * 3600,
       sameSite: "None",
-      secure: false,
+      secure: trues,
     };
 
     // set cookie client
