@@ -32,8 +32,8 @@ exports.logout = async (req, res) => {
   });
 
   res.status(200).json({
-    status: "success",
-    message: "Logout berhasil, cookie dihapus",
+    success: true,
+    message: "Logout berhasil",
   });
 };
 
