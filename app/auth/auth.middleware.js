@@ -2,7 +2,7 @@ const jwt = require("jsonwebtoken");
 
 function authenticate(req, res, next) {
   // const auth = req.headers.authorization;
-  const cookie = req.cookies.SessionID
+  const cookie = req.cookies.SessionID;
 
   // if (!auth) return res.status(401).json({ error: "Token dibutuhkan" });
   if (!cookie) return res.status(401).json({ error: "Unautorized" });
@@ -12,6 +12,7 @@ function authenticate(req, res, next) {
   jwt.verify(cookie, process.env.JWT_SECRET, (err, decoded) => {
     if (err) return res.status(403).json({ error: "Session Expired" });
     req.user = decoded;
+    console.log(decoded);
     next();
   });
 }
