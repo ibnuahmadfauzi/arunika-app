@@ -5,9 +5,31 @@ const { options } = require("./auth.routes");
 const { json } = require("express");
 
 exports.check = async (req, res) => {
-  res.status(200).json({
-    user: req.user,
-  });
+  // {
+
+  //     user: req.user,
+  //   }
+  try {
+    console.log(req.user);
+    res.status(200).json({
+      success: true,
+      message: "User Authorized",
+      user: {
+        id: req.user.id,
+        name: req.user.name,
+        email: req.user.email,
+        role: {
+          id: req.user.role.id,
+          name: req.user.role.name,
+        },
+      },
+    });
+  } catch (err) {
+    res.status(401).json({
+      success: false,
+      message: "User unauthorized",
+    });
+  }
 };
 
 exports.register = async (req, res) => {
@@ -41,11 +63,14 @@ exports.login = async (req, res) => {
   const { email, password } = req.body;
   try {
     const result = await pool.query(
-      "SELECT users.*, roles.id as id_role, roles.name as name_role FROM users JOIN roles ON users.role_id = roles.id WHERE email = $1",
+      "SELECT users.*, roles.id as id_role, roles.name as name_role, roles.id as id_role FROM users JOIN roles ON users.role_id = roles.id WHERE email = $1",
       [email]
     );
     if (result.rowCount === 0)
-      return res.status(404).json({ error: "User tidak ditemukan" });
+      return res.status(401).json({
+        success: false,
+        message: "Email atau password salah",
+      });
 
     const data = result.rows[0];
     const match = await bcrypt.compare(password, data.password);
@@ -55,7 +80,10 @@ exports.login = async (req, res) => {
       id: data.id,
       name: data.name,
       email: data.email,
-      role: data.name_role,
+      role: {
+        id: data.id_role,
+        name: data.name_role,
+      },
     };
 
     const token = jwt.sign(user, process.env.JWT_SECRET, { expiresIn: "1d" });
@@ -68,9 +96,9 @@ exports.login = async (req, res) => {
 
     // set cookie client
     res.cookie("SessionID", token, options).status(200).json({
-      status: "success",
-      data: user,
-      message: "Login Berhasil",
+      success: true,
+      message: "User Authorized",
+      user: user,
     });
     // set response
     // res.status(200).json({
@@ -84,7 +112,10 @@ exports.login = async (req, res) => {
     // })
     // res.json({ token });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(401).json({
+      success: false,
+      message: "Email atau password salah",
+    });
   }
 };
 
