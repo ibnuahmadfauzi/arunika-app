@@ -4,6 +4,7 @@ const router = express.Router();
 // import controller
 const checkInController = require("../controllers/checkin-controllers");
 const checkOutController = require("../controllers/checkout-controllers");
+const upload = require("../middleware/upload");
 
 // Middleware specific to this router
 router.use((req, res, next) => {
@@ -17,7 +18,7 @@ router.get("/", (req, res) => {
   res.json(user);
 });
 
-router.post("/checkin", checkInController.checkIn);
+router.post("/checkin", upload.single("photo_in"), checkInController.checkIn);
 router.put("/checkout/:id", checkOutController.checkOut);
 
 module.exports = router;

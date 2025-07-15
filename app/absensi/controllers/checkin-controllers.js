@@ -1,41 +1,32 @@
 // import package
 const pool = require("../../../config/db");
 require("dotenv").config();
-// user_id: req.session.user.id,
 
 // function to checkin attendances
 async function checkIn(req, res) {
-  const checkInData = req.body;
-
   function getCurrentTime() {
     const now = new Date();
-
-    // Ambil jam, menit, detik
     let hours = now.getHours();
     let minutes = now.getMinutes();
     let seconds = now.getSeconds();
-
-    // Tambahkan leading zero jika perlu
     hours = hours < 10 ? "0" + hours : hours;
     minutes = minutes < 10 ? "0" + minutes : minutes;
     seconds = seconds < 10 ? "0" + seconds : seconds;
-
     return `${hours}:${minutes}:${seconds}`;
   }
 
   function getCurrentDate() {
     const now = new Date();
-
     const year = now.getFullYear();
-    let month = now.getMonth() + 1; // getMonth() dimulai dari 0
+    let month = now.getMonth() + 1;
     let day = now.getDate();
-
-    // Tambahkan leading zero jika perlu
     month = month < 10 ? "0" + month : month;
     day = day < 10 ? "0" + day : day;
-
     return `${year}-${month}-${day}`;
   }
+
+  // ✅ Gunakan req.file.path kalau ada file
+  const photoInPath = req.file ? req.file.path : null;
 
   const newCheckInData = {
     date: getCurrentDate(),
@@ -46,21 +37,22 @@ async function checkIn(req, res) {
     location_out_lat: "",
     location_out_long: "",
     description_in: req.body.description_in,
-    photo_in: req.body.photo_in,
+    photo_in: photoInPath, // ⏪ Ganti pakai path file dari Multer
     description_out: "",
     photo_out: "",
   };
 
   try {
-    // 👉 Validasi: cek apakah ada properti undefined
+    // Validasi
     for (const [key, value] of Object.entries(newCheckInData)) {
       if (value === undefined) {
         throw new Error(`Field ${key} tidak boleh undefined`);
       }
     }
-    const result = await pool.query(
+
+    await pool.query(
       `
-        INSERT INTO attendances (
+      INSERT INTO attendances (
         user_id,
         date,
         check_in_time,
@@ -74,27 +66,26 @@ async function checkIn(req, res) {
         description_out,
         photo_out
       ) VALUES (
-        ${req.user.id},
-        CURRENT_DATE,
-        '${newCheckInData.check_in_time}',
-        NULL,
-        '${newCheckInData.location_in_lat}',
-        '${newCheckInData.location_in_long}',
-        NULL,
-        NULL,
-        '${newCheckInData.description_in}',
-        '${newCheckInData.photo_in}',
-        NULL,
-        NULL
-      );
-      `
+        $1, CURRENT_DATE, $2, NULL, $3, $4, NULL, NULL, $5, $6, NULL, NULL
+      )
+      `,
+      [
+        req.user.id,
+        newCheckInData.check_in_time,
+        newCheckInData.location_in_lat,
+        newCheckInData.location_in_long,
+        newCheckInData.description_in,
+        newCheckInData.photo_in,
+      ]
     );
+
     res.json({
       success: true,
       message: "Checkin berhasil",
       data: newCheckInData,
     });
   } catch (err) {
+    console.error(err);
     res.status(400).json({
       success: false,
       message: "Data checkin tidak valid",
