@@ -1,7 +1,8 @@
 require("dotenv").config();
 const express = require("express");
 const cookiesParser = require("cookie-parser");
-const cors = require('cors');
+const cors = require("cors");
+const path = require("path");
 
 const absensiRouter = require("./app/absensi/routes/absensi-routes");
 const arunikaCoreRouter = require("./app/arunikacore/routes/arunikacore-routes");
@@ -12,11 +13,12 @@ const app = express();
 app.use(express.json());
 app.use(cookiesParser());
 
-app.use(cors({
-  origin: true,
-  credentials: true
-}));
-
+app.use(
+  cors({
+    origin: true,
+    credentials: true,
+  })
+);
 
 const port = process.env.PORT || 8080;
 
@@ -24,6 +26,10 @@ const port = process.env.PORT || 8080;
 app.use("/auth", authRouter);
 app.use("/absensi", authenticate, absensiRouter);
 app.use("/arunikacore", authenticate, arunikaCoreRouter);
+app.use(
+  "/image/absensi",
+  express.static(path.join(__dirname, "app/absensi/uploads"))
+);
 
 // root route
 app.get("/", (req, res) => {
