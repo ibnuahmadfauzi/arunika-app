@@ -5,10 +5,6 @@ const { options } = require("./auth.routes");
 const { json } = require("express");
 
 exports.check = async (req, res) => {
-  // {
-
-  //     user: req.user,
-  //   }
   try {
     console.log(req.user);
     res.status(200).json({
@@ -21,6 +17,14 @@ exports.check = async (req, res) => {
         role: {
           id: req.user.role.id,
           name: req.user.role.name,
+        },
+        position: {
+          id: req.user.position.id,
+          name: req.user.position.name,
+        },
+        company: {
+          id: req.user.company.id,
+          name: req.user.company.name,
         },
       },
     });
@@ -63,7 +67,23 @@ exports.login = async (req, res) => {
   const { email, password } = req.body;
   try {
     const result = await pool.query(
-      "SELECT users.*, roles.id as id_role, roles.name as name_role, roles.id as id_role FROM users JOIN roles ON users.role_id = roles.id WHERE email = $1",
+      `
+  SELECT 
+    u.*,
+    r.id AS role_id,
+    r.name AS role_name,
+    p.id AS position_id,
+    p.name AS position_name,
+    c.id AS company_id,
+    c.name AS company_name
+  FROM 
+    users u
+    JOIN roles r ON u.role_id = r.id
+    JOIN positions p ON u.position_id = p.id
+    JOIN companies c ON p.company_id = c.id
+  WHERE 
+    u.email = $1
+  `,
       [email]
     );
     if (result.rowCount === 0)
@@ -81,8 +101,16 @@ exports.login = async (req, res) => {
       name: data.name,
       email: data.email,
       role: {
-        id: data.id_role,
-        name: data.name_role,
+        id: data.role_id,
+        name: data.role_name,
+      },
+      position: {
+        id: data.position_id,
+        name: data.position_name,
+      },
+      company: {
+        id: data.company_id,
+        name: data.company_name,
       },
     };
 
@@ -100,17 +128,6 @@ exports.login = async (req, res) => {
       message: "User Authorized",
       user: user,
     });
-    // set response
-    // res.status(200).json({
-    //   status : "success",
-    //   data : {
-    //     "name" : data.name,
-    //     "email" : data.email,
-    //     "position" : "IT Staff"
-    //   },
-    //   message : "Login Berhasil",
-    // })
-    // res.json({ token });
   } catch (err) {
     res.status(401).json({
       success: false,
