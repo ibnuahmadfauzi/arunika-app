@@ -19,6 +19,10 @@ router.get("/", (req, res) => {
 });
 
 router.post("/checkin", upload.single("photo_in"), checkInController.checkIn);
-router.put("/checkout/:id", checkOutController.checkOut);
+router.put(
+  "/checkout/:id",
+  upload.single("photo_out"),
+  checkOutController.checkOut
+);
 
 module.exports = router;
