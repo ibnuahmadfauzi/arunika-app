@@ -4,6 +4,7 @@ const router = express.Router();
 // import controller
 const checkInController = require("../controllers/checkin-controllers");
 const checkOutController = require("../controllers/checkout-controllers");
+const absensiController = require("../controllers/absensi-controller");
 const upload = require("../middleware/upload");
 
 // Middleware specific to this router
@@ -18,6 +19,7 @@ router.get("/", (req, res) => {
   res.json(user);
 });
 
+router.get("/get/:id", absensiController.getAbsensiById);
 router.post("/checkin", upload.single("photo_in"), checkInController.checkIn);
 router.put(
   "/checkout/:id",
