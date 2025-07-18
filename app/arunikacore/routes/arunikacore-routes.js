@@ -6,6 +6,7 @@ const companiesController = require("../controllers/companies-controller");
 const positionsController = require("../controllers/positions-controller");
 const rolesController = require("../controllers/roles-controller");
 const usersController = require("../controllers/users-controller");
+const attendancesController = require("../controllers/attendances-controller");
 
 // Middleware specific to this router
 router.use((req, res, next) => {
@@ -74,6 +75,20 @@ router.post("/users", usersController.storeUser);
 router.put("/users/:id", usersController.updateUser);
 // DELETE : delete 1 user data by ID
 router.delete("/users/:id", usersController.deleteUser);
+// ======================================================================================== //
+// ======================================================================================== //
+// ======================================================================================== //
+// Route for attendances
+// GET : all attendances
+router.get("/attendances", attendancesController.getAllAttendances);
+// GET : 1 attendance
+router.get("/attendances/:id", attendancesController.getAttendanceById);
+// POST : add 1 attendance data
+// router.post("/attendances", attendancesController.storeAttendance);
+// // PUT : update 1 attendance data by ID
+// router.put("/attendances/:id", attendancesController.updateAttendance);
+// // DELETE : delete 1 attendance data by ID
+// router.delete("/attendances/:id", attendancesController.deleteAttendance);
 // ======================================================================================== //
 // ======================================================================================== //
 // ======================================================================================== //
