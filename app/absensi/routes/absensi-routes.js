@@ -22,7 +22,7 @@ router.get("/", (req, res) => {
 router.get("/status", absensiController.getAbsensiById);
 router.post("/checkin", upload.single("photo_in"), checkInController.checkIn);
 router.put(
-  "/checkout/:id",
+  "/checkout",
   upload.single("photo_out"),
   checkOutController.checkOut
 );

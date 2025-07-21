@@ -4,7 +4,7 @@ require("dotenv").config();
 
 async function checkOut(req, res) {
   const attendanceData = req.body;
-  const userId = req.params.id;
+  const userId = req.user.id;
 
   function getCurrentTime() {
     const now = new Date();
