@@ -19,7 +19,7 @@ router.get("/", (req, res) => {
   res.json(user);
 });
 
-router.get("/get/:id", absensiController.getAbsensiById);
+router.get("/status", absensiController.getAbsensiById);
 router.post("/checkin", upload.single("photo_in"), checkInController.checkIn);
 router.put(
   "/checkout/:id",
