@@ -19,13 +19,12 @@ async function getAbsensiById(req, res) {
       [id]
     );
 
-    const status = {
-      check_in_time: result.rows[0].check_in_time,
-      check_out_time: result.rows[0].check_out_time,
-      date: result.rows[0].date,
-    };
-
     if (result.rows.length > 0) {
+      const status = {
+        check_in_time: result.rows[0].check_in_time,
+        check_out_time: result.rows[0].check_out_time,
+        date: result.rows[0].date,
+      };
       res.json({
         success: true,
         data: status,

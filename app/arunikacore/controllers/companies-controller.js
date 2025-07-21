@@ -5,7 +5,7 @@ require("dotenv").config();
 // get all companies data from database
 async function getAllCompanies(req, res) {
   try {
-    const result = await pool.query("SELECT * FROM companies");
+    const result = await pool.query("SELECT id, name FROM companies");
     res.json(result.rows);
   } catch (err) {
     console.error(err.message);
@@ -17,7 +17,9 @@ async function getAllCompanies(req, res) {
 async function getCompanyById(req, res) {
   const id = req.params.id;
   try {
-    const result = await pool.query(`SELECT * FROM companies WHERE id=${id}`);
+    const result = await pool.query(
+      `SELECT id, name, work_start, work_end, location_lat, location_long FROM companies WHERE id=${id}`
+    );
     res.json(result.rows);
   } catch (err) {
     console.error(err.message);
