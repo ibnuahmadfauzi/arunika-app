@@ -28,10 +28,12 @@ async function getAbsensiById(req, res) {
       res.json({
         success: true,
         data: status,
+        message: "Data absensi ditemukan",
       });
     } else {
       res.status(404).json({
         success: false,
+        data: null,
         message: "Data absensi tidak ditemukan",
       });
     }
