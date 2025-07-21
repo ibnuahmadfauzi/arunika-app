@@ -15,16 +15,17 @@ exports.check = async (req, res) => {
         name: req.user.name,
         email: req.user.email,
         role: {
-          id: req.user.role.id,
           name: req.user.role.name,
         },
         position: {
-          id: req.user.position.id,
           name: req.user.position.name,
         },
         company: {
-          id: req.user.company.id,
           name: req.user.company.name,
+          work_start: req.user.company.work_start,
+          work_end: req.user.company.work_end,
+          location_lat: req.user.company.location_lat,
+          location_long: req.user.company.location_long,
         },
       },
     });
@@ -75,7 +76,11 @@ exports.login = async (req, res) => {
     p.id AS position_id,
     p.name AS position_name,
     c.id AS company_id,
-    c.name AS company_name
+    c.name AS company_name,
+    c.work_start,
+    c.work_end,
+    c.location_lat,
+    c.location_long
   FROM 
     users u
     JOIN roles r ON u.role_id = r.id
@@ -86,6 +91,7 @@ exports.login = async (req, res) => {
   `,
       [email]
     );
+
     if (result.rowCount === 0)
       return res.status(401).json({
         success: false,
@@ -101,16 +107,17 @@ exports.login = async (req, res) => {
       name: data.name,
       email: data.email,
       role: {
-        id: data.role_id,
         name: data.role_name,
       },
       position: {
-        id: data.position_id,
         name: data.position_name,
       },
       company: {
-        id: data.company_id,
         name: data.company_name,
+        work_start: data.work_start,
+        work_end: data.work_end,
+        location_lat: data.location_lat,
+        location_long: data.location_long,
       },
     };
 
