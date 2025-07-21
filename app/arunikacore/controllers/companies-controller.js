@@ -33,12 +33,19 @@ async function storeCompany(req, res) {
 
   try {
     const result = await pool.query(
-      `INSERT INTO companies (name, created_at, updated_at) VALUES ('${companyData.name}', CURRENT_TIMESTAMP, NULL);`
+      `INSERT INTO companies (name, created_at, updated_at, work_start, work_end, location_lat, location_long) VALUES ('${companyData.name}', CURRENT_TIMESTAMP, NULL, '${companyData.work_start}', '${companyData.work_end}', '${companyData.location_lat}', '${companyData.location_long}');`
     );
-    res.json(result.rows);
+    res.json({
+      success: true,
+      data: null,
+      message: "Data perusahaan berhasil ditambahkan",
+    });
   } catch (err) {
     console.error(err.message);
-    res.status(500).send("Server error");
+    res.status(500).json({
+      success: false,
+      message: "Data perusahaan gagal ditambahkan",
+    });
   }
 }
 
@@ -49,12 +56,19 @@ async function updateCompany(req, res) {
 
   try {
     const result = await pool.query(
-      `UPDATE companies SET name = '${companyData.name}', updated_at=CURRENT_TIMESTAMP WHERE id = '${companyId}';`
+      `UPDATE companies SET name = '${companyData.name}', work_start = '${companyData.work_start}', work_end = '${companyData.work_end}', location_lat = '${companyData.location_lat}', location_long = '${companyData.location_long}', updated_at=CURRENT_TIMESTAMP WHERE id = '${companyId}';`
     );
-    res.json(result.rows);
+    res.json({
+      success: true,
+      data: null,
+      message: "Data perusahaan berhasil diubah",
+    });
   } catch (err) {
     console.error(err.message);
-    res.status(500).send("Server error");
+    res.status(500).json({
+      success: false,
+      message: "Data perusahaan gagal diubah",
+    });
   }
 }
 
@@ -65,10 +79,17 @@ async function deleteCompany(req, res) {
     const result = await pool.query(
       `DELETE FROM companies WHERE id = ${companyId};`
     );
-    res.json(result.rows);
+    res.json({
+      success: true,
+      data: null,
+      message: "Data perusahaan berhasil dihapus",
+    });
   } catch (err) {
     console.error(err.message);
-    res.status(500).send("Server error");
+    res.status(500).json({
+      success: false,
+      message: "Data perusahaan gagal dihapus",
+    });
   }
 }
 
