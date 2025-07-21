@@ -51,9 +51,9 @@ async function checkOut(req, res) {
     const photoOutPath = req.file ? req.file.path : null;
 
     const newCheckOutData = {
-      date: getCurrentDate(),
+      date: currentData.date,
       check_in_time: currentData.check_in_time,
-      check_out_time: getCurrentTime(),
+      check_out_time: req.body.check_out_time,
       location_in_lat: currentData.location_in_lat,
       location_in_long: currentData.location_in_long,
       location_out_lat: attendanceData.location_out_lat,

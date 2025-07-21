@@ -29,8 +29,8 @@ async function checkIn(req, res) {
   const photoInPath = req.file ? req.file.path : null;
 
   const newCheckInData = {
-    date: getCurrentDate(),
-    check_in_time: getCurrentTime(),
+    date: req.body.date,
+    check_in_time: req.body.check_in_time,
     check_out_time: "",
     location_in_lat: req.body.location_in_lat,
     location_in_long: req.body.location_in_long,
