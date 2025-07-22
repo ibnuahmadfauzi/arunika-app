@@ -6,10 +6,25 @@ require("dotenv").config();
 async function getAllCompanies(req, res) {
   try {
     const result = await pool.query("SELECT id, name FROM companies");
-    res.json(result.rows);
+    if (result.rows.length > 0) {
+      res.json({
+        success: true,
+        data: result.rows,
+        message: "Berhasil mengambil semua data perusahaan",
+      });
+    } else {
+      res.json({
+        success: true,
+        data: null,
+        message: "Data perusahaan kosong",
+      });
+    }
   } catch (err) {
     console.error(err.message);
-    res.status(500).send("Server error");
+    res.status(400).json({
+      success: false,
+      message: "Data perusahaan gagal ditampilkan",
+    });
   }
 }
 
@@ -20,7 +35,19 @@ async function getCompanyById(req, res) {
     const result = await pool.query(
       `SELECT id, name, work_start, work_end, location_lat, location_long FROM companies WHERE id=${id}`
     );
-    res.json(result.rows);
+    if (result.rows.length > 0) {
+      res.json({
+        success: true,
+        data: result.rows,
+        message: "Data perusahaan berhasil diambil",
+      });
+    } else {
+      res.json({
+        success: true,
+        data: null,
+        message: "ID perusahaan tidak ditemukan",
+      });
+    }
   } catch (err) {
     console.error(err.message);
     res.status(500).send("Server error");
@@ -42,7 +69,7 @@ async function storeCompany(req, res) {
     });
   } catch (err) {
     console.error(err.message);
-    res.status(500).json({
+    res.status(400).json({
       success: false,
       message: "Data perusahaan gagal ditambahkan",
     });
@@ -79,11 +106,19 @@ async function deleteCompany(req, res) {
     const result = await pool.query(
       `DELETE FROM companies WHERE id = ${companyId};`
     );
-    res.json({
-      success: true,
-      data: null,
-      message: "Data perusahaan berhasil dihapus",
-    });
+    if (result.rows.length > 0) {
+      res.json({
+        success: true,
+        data: null,
+        message: "Data perusahaan berhasil dihapus",
+      });
+    } else {
+      res.json({
+        success: true,
+        data: null,
+        message: "Data perusahaan tidak ditemukan",
+      });
+    }
   } catch (err) {
     console.error(err.message);
     res.status(500).json({

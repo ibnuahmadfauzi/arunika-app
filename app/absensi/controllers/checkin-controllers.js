@@ -2,30 +2,7 @@
 const pool = require("../../../config/db");
 require("dotenv").config();
 
-// function to checkin attendances
 async function checkIn(req, res) {
-  function getCurrentTime() {
-    const now = new Date();
-    let hours = now.getHours();
-    let minutes = now.getMinutes();
-    let seconds = now.getSeconds();
-    hours = hours < 10 ? "0" + hours : hours;
-    minutes = minutes < 10 ? "0" + minutes : minutes;
-    seconds = seconds < 10 ? "0" + seconds : seconds;
-    return `${hours}:${minutes}:${seconds}`;
-  }
-
-  function getCurrentDate() {
-    const now = new Date();
-    const year = now.getFullYear();
-    let month = now.getMonth() + 1;
-    let day = now.getDate();
-    month = month < 10 ? "0" + month : month;
-    day = day < 10 ? "0" + day : day;
-    return `${year}-${month}-${day}`;
-  }
-
-  // ✅ Gunakan req.file.path kalau ada file
   const photoInPath = req.file ? req.file.path : null;
 
   const newCheckInData = {
@@ -37,19 +14,35 @@ async function checkIn(req, res) {
     location_out_lat: "",
     location_out_long: "",
     description_in: req.body.description_in,
-    photo_in: photoInPath, // ⏪ Ganti pakai path file dari Multer
+    photo_in: photoInPath,
     description_out: "",
     photo_out: "",
   };
 
   try {
-    // Validasi
+    // Validasi field tidak undefined
     for (const [key, value] of Object.entries(newCheckInData)) {
       if (value === undefined) {
         throw new Error(`Field ${key} tidak boleh undefined`);
       }
     }
 
+    // ✅ Cek apakah sudah ada check-in di tanggal tersebut
+    const checkQuery = `
+      SELECT 1 FROM attendances
+      WHERE user_id = $1 AND date = CURRENT_DATE
+      LIMIT 1
+    `;
+    const checkResult = await pool.query(checkQuery, [req.user.id]);
+
+    if (checkResult.rowCount > 0) {
+      return res.status(400).json({
+        success: false,
+        message: "User sudah melakukan check-in hari ini",
+      });
+    }
+
+    // ✅ Insert jika belum ada
     await pool.query(
       `
       INSERT INTO attendances (
@@ -81,14 +74,14 @@ async function checkIn(req, res) {
 
     res.json({
       success: true,
-      message: "Checkin berhasil",
+      message: "Check-in berhasil",
       data: newCheckInData,
     });
   } catch (err) {
-    console.error(err);
+    console.error(err.stack);
     res.status(400).json({
       success: false,
-      message: "Data checkin tidak valid",
+      message: err.message || "Data check-in tidak valid",
     });
   }
 }
