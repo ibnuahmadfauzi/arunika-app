@@ -83,6 +83,7 @@ router.delete("/users/:id", usersController.deleteUser);
 router.get("/attendances", attendancesController.getAllAttendances);
 // GET : 1 attendance
 router.get("/attendances/:id", attendancesController.getAttendanceById);
+
 // POST : add 1 attendance data
 // router.post("/attendances", attendancesController.storeAttendance);
 // // PUT : update 1 attendance data by ID
