@@ -39,9 +39,16 @@ async function checkOut(req, res) {
     );
 
     if (result.rows.length === 0) {
-      return res.status(404).json({
+      return res.status(200).json({
         success: false,
         message: "Data attendance tidak ditemukan",
+      });
+    }
+
+    if (result.rows[0].check_out_time !== null) {
+      return res.status(200).json({
+        success: false,
+        message: "Sudah melakukan checkout untuk hari ini",
       });
     }
 
