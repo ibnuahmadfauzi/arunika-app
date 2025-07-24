@@ -77,11 +77,45 @@ async function getAllAttendances(req, res) {
 async function getAttendanceById(req, res) {
   const id = req.params.id;
   try {
-    const result = await pool.query(`SELECT * FROM attendances WHERE id=${id}`);
-    res.json(result.rows);
+    const result = await pool.query(`
+      SELECT
+        attendances.id,
+        attendances.date,
+        attendances.check_in_time,
+        attendances.check_out_time,
+        attendances.description_in,
+        attendances.description_out,
+        attendances.photo_in,
+        attendances.photo_out,
+        attendances.location_in_lat,
+        attendances.location_in_long,
+        attendances.location_out_lat,
+        attendances.location_out_long,
+        users.name AS user_name,
+        positions.name AS position_name,
+        companies.name AS company_name
+      FROM
+        attendances
+      JOIN
+        users ON attendances.user_id = users.id
+      JOIN
+        positions ON users.position_id = positions.id
+      JOIN
+        companies ON positions.company_id = companies.id
+      WHERE
+        attendances.id = ${id};
+      `);
+    res.json({
+      success: true,
+      data: result.rows,
+      message: "Data absensi berhasil diambil",
+    });
   } catch (err) {
     console.error(err.message);
-    res.status(500).send("Server error");
+    res.status(500).json({
+      success: false,
+      message: "Data absensi gagal ditampilkan",
+    });
   }
 }
 
