@@ -6,11 +6,26 @@ const bcrypt = require("bcrypt");
 // get all users data from database
 async function getAllUsers(req, res) {
   try {
-    const result = await pool.query("SELECT * FROM users");
-    res.json(result.rows);
+    const result = await pool.query("SELECT id, name, email FROM users");
+    if (result.rows.length > 0) {
+      res.json({
+        success: true,
+        data: result.rows,
+        message: "Berhasil mengambil semua data user",
+      });
+    } else {
+      res.json({
+        success: true,
+        data: null,
+        message: "Data user kosong",
+      });
+    }
   } catch (err) {
     console.error(err.message);
-    res.status(500).send("Server error");
+    res.status(400).json({
+      success: false,
+      message: "Data user gagal ditampilkan",
+    });
   }
 }
 
