@@ -128,11 +128,19 @@ async function getAttendanceById(req, res) {
       WHERE
         attendances.id = ${id};
       `);
-    res.json({
-      success: true,
-      data: result.rows,
-      message: "Data absensi berhasil diambil",
-    });
+    if (result.rows.length > 0) {
+      res.json({
+        success: true,
+        data: result.rows,
+        message: "Data absensi berhasil diambil",
+      });
+    } else {
+      res.json({
+        success: true,
+        data: null,
+        message: "Data absensi kosong",
+      });
+    }
   } catch (err) {
     console.error(err.message);
     res.status(500).json({
