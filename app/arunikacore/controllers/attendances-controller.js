@@ -152,7 +152,9 @@ async function getAttendanceById(req, res) {
 
 async function getUserLists(req, res) {
   try {
-    const result = await pool.query("SELECT id, name FROM users");
+    const result = await pool.query(
+      "SELECT id, name FROM users ORDER BY name ASC"
+    );
     if (result.rows.length > 0) {
       res.json({
         success: true,
