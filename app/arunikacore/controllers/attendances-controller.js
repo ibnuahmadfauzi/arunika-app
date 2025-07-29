@@ -169,7 +169,7 @@ async function getUserLists(req, res) {
       });
     }
   } catch (err) {
-    res.status(500).json({
+    res.status(400).json({
       success: false,
       message: "Data nama dan id gagal diambil",
     });
