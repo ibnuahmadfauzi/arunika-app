@@ -5,9 +5,14 @@ require("dotenv").config();
 // get all attendances data from database
 async function getAllAttendances(req, res) {
   const userId = req.query.userId ? req.query.userId : undefined;
+  const startDate = req.query.startDate;
+  const endDate = req.query.endDate;
 
   try {
-    const query = `
+    let query = "";
+    let values = [];
+    if (userId === undefined) {
+      query = `
     SELECT 
       attendances.id,
       attendances.user_id,
@@ -15,47 +20,41 @@ async function getAllAttendances(req, res) {
       attendances.check_in_time,
       attendances.check_out_time,
       attendances.description_in,
-      to_char(date, 'DD-MM-YYYY') as date
+      TO_CHAR(date, 'YYYY-MM-DD') AS date
     FROM 
       attendances
     JOIN 
-      users ON attendances.user_id = users.id;
+      users ON attendances.user_id = users.id
+    WHERE
+      attendances.date BETWEEN $1 AND $2;
   `;
-    const result = await pool.query(query);
-    const data = result.rows;
+      values = [startDate, endDate];
+    } else {
+      query = `
+    SELECT 
+      attendances.id,
+      attendances.user_id,
+      users.name,
+      attendances.check_in_time,
+      attendances.check_out_time,
+      attendances.description_in,
+      TO_CHAR(date, 'YYYY-MM-DD') AS date
+    FROM 
+      attendances
+    JOIN 
+      users ON attendances.user_id = users.id
+    WHERE 
+      attendances.user_id = $1
+    AND
+      attendances.date BETWEEN $2 AND $3;
+  `;
+      values = [userId, startDate, endDate];
+    }
 
-    // Ubah string date ke format Date JS
-    const dates = data.map((item) => {
-      // date format: DD-MM-YYYY → ubah ke YYYY-MM-DD supaya aman
-      const [day, month, year] = item.date.split("-");
-      return new Date(`${year}-${month}-${day}`);
-    });
+    console.log(Number(userId));
+    console.log(typeof Number(userId));
 
-    // Ambil terkecil & terbesar
-    const minDate = new Date(Math.min(...dates));
-    const maxDate = new Date(Math.max(...dates));
-
-    // Kalau mau dikembalikan ke string DD-MM-YYYY lagi:
-    const formatDate = (d) =>
-      `${String(d.getDate()).padStart(2, "0")}-${String(
-        d.getMonth() + 1
-      ).padStart(2, "0")}-${d.getFullYear()}`;
-
-    console.log("Terkecil:", formatDate(minDate));
-    console.log("Terbesar:", formatDate(maxDate));
-    const startDate = req.query.startDate
-      ? req.query.startDate
-      : formatDate(minDate);
-    const endDate = req.query.endDate ? req.query.endDate : formatDate(maxDate);
-    console.log(userId + " " + startDate + " " + endDate);
-
-    const parseDate = (str) => {
-      const [day, month, year] = str.split("-");
-      return new Date(`${year}-${month}-${day}`);
-    };
-
-    const start = parseDate(startDate);
-    const end = parseDate(endDate);
+    const result = await pool.query(query, values);
 
     if (result.rows.length <= 0) {
       res.json({
@@ -64,31 +63,14 @@ async function getAllAttendances(req, res) {
         message: "Tidak ada data absensi",
       });
     } else {
-      if (userId === undefined) {
-        const newData = data.filter((item) => {
-          const itemDate = parseDate(item.date);
-          return itemDate >= start && itemDate <= end;
-        });
-        res.json({
-          success: true,
-          data: newData,
-          message: "Data absensi berhasil diambil",
-        });
-      } else {
-        const filtered = data.filter((item) => item.user_id === Number(userId));
-        const newData = filtered.filter((item) => {
-          const itemDate = parseDate(item.date);
-          return itemDate >= start && itemDate <= end;
-        });
-
-        res.json({
-          success: true,
-          data: newData,
-          message: "Data absensi berhasil diambil",
-        });
-      }
+      res.json({
+        success: true,
+        data: result.rows,
+        message: "Tidak ada data absensi",
+      });
     }
   } catch (err) {
+    console.log(err);
     res.status(500).json({
       success: false,
       message: "Data absensi gagal diambil",
