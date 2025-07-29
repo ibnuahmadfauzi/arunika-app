@@ -51,12 +51,15 @@ async function getLastActivity(req, res) {
   try {
     const result = await pool.query(
       `
-        SELECT date, check_in_time, check_out_time
-        FROM attendances
-        WHERE user_id = $1
-        ORDER BY id DESC
-        LIMIT 1
-      `,
+    SELECT 
+      TO_CHAR(date, 'DD-MM-YYYY') AS date,
+      check_in_time,
+      check_out_time
+    FROM attendances
+    WHERE user_id = $1
+    ORDER BY id DESC
+    LIMIT 1
+  `,
       [id]
     );
     if (result.rows.length > 0) {
@@ -74,9 +77,9 @@ async function getLastActivity(req, res) {
     }
   } catch (err) {
     console.error(err.message);
-    res.status(500).json({
+    res.status(400).json({
       success: false,
-      message: "Terjadi kesalahan server",
+      message: "Gagal mengambil aktivitas absensi",
     });
   }
 }
