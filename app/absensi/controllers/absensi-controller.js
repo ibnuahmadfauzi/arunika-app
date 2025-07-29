@@ -63,9 +63,22 @@ async function getLastActivity(req, res) {
       [id]
     );
     if (result.rows.length > 0) {
+      let lastActivity = {
+        status: "",
+        date: result.rows[0].date,
+        time: "",
+      };
+
+      if (result.rows.check_out_time !== null) {
+        lastActivity.status = "Check Out";
+        lastActivity.time = result.rows[0].check_out_time;
+      } else {
+        lastActivity.status = "Check In";
+        lastActivity.time = result.rows[0].check_in_time;
+      }
       res.json({
         success: true,
-        data: result.rows,
+        data: lastActivity,
         message: "Data absensi ditemukan",
       });
     } else {
