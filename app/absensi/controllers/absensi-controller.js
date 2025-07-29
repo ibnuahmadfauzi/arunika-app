@@ -31,8 +31,43 @@ async function getAbsensiById(req, res) {
         message: "Data absensi ditemukan",
       });
     } else {
-      res.status(404).json({
+      res.status(200).json({
         success: false,
+        data: null,
+        message: "Data absensi tidak ditemukan",
+      });
+    }
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).json({
+      success: false,
+      message: "Terjadi kesalahan server",
+    });
+  }
+}
+
+async function getLastActivity(req, res) {
+  const id = req.user.id;
+  try {
+    const result = await pool.query(
+      `
+        SELECT date, check_in_time, check_out_time
+        FROM attendances
+        WHERE user_id = $1
+        ORDER BY id DESC
+        LIMIT 1
+      `,
+      [id]
+    );
+    if (result.rows.length > 0) {
+      res.json({
+        success: true,
+        data: result.rows,
+        message: "Data absensi ditemukan",
+      });
+    } else {
+      res.json({
+        success: true,
         data: null,
         message: "Data absensi tidak ditemukan",
       });
@@ -48,4 +83,5 @@ async function getAbsensiById(req, res) {
 
 module.exports = {
   getAbsensiById,
+  getLastActivity,
 };

@@ -20,6 +20,7 @@ router.get("/", (req, res) => {
 });
 
 router.get("/status", absensiController.getAbsensiById);
+router.get("/last", absensiController.getLastActivity);
 router.post("/checkin", upload.single("photo_in"), checkInController.checkIn);
 router.put(
   "/checkout",
