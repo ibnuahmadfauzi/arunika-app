@@ -150,7 +150,32 @@ async function getAttendanceById(req, res) {
   }
 }
 
+async function getUserLists(req, res) {
+  try {
+    const result = await pool.query("SELECT id, name FROM users");
+    if (result.rows.length > 0) {
+      res.json({
+        success: true,
+        data: result.rows,
+        message: "Data nama dan id berhasil diambil",
+      });
+    } else {
+      res.json({
+        success: true,
+        data: null,
+        message: "Data nama dan id tidak tersedia",
+      });
+    }
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: "Data nama dan id gagal diambil",
+    });
+  }
+}
+
 module.exports = {
   getAllAttendances,
   getAttendanceById,
+  getUserLists,
 };
