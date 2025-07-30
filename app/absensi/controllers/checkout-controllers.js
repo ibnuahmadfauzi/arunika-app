@@ -6,27 +6,6 @@ async function checkOut(req, res) {
   const attendanceData = req.body;
   const userId = req.user.id;
 
-  function getCurrentTime() {
-    const now = new Date();
-    let hours = now.getHours();
-    let minutes = now.getMinutes();
-    let seconds = now.getSeconds();
-    hours = hours < 10 ? "0" + hours : hours;
-    minutes = minutes < 10 ? "0" + minutes : minutes;
-    seconds = seconds < 10 ? "0" + seconds : seconds;
-    return `${hours}:${minutes}:${seconds}`;
-  }
-
-  function getCurrentDate() {
-    const now = new Date();
-    const year = now.getFullYear();
-    let month = now.getMonth() + 1;
-    let day = now.getDate();
-    month = month < 10 ? "0" + month : month;
-    day = day < 10 ? "0" + day : day;
-    return `${year}-${month}-${day}`;
-  }
-
   try {
     // 🔍 Ambil data attendance hari ini
     const result = await pool.query(
@@ -55,7 +34,9 @@ async function checkOut(req, res) {
     const currentData = result.rows[0];
 
     // ✅ Ambil path file dari Multer
-    const photoOutPath = req.file ? req.file.path : null;
+    const photoOutPath = req.file
+      ? "/image/absensi/" + req.file.filename
+      : null;
 
     const newCheckOutData = {
       date: currentData.date,

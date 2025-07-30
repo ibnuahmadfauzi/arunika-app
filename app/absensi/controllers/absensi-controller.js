@@ -69,7 +69,7 @@ async function getLastActivity(req, res) {
         time: "",
       };
 
-      if (result.rows.check_out_time !== null) {
+      if (result.rows[0].check_out_time !== null) {
         lastActivity.status = "Check Out";
         lastActivity.time = result.rows[0].check_out_time;
       } else {
