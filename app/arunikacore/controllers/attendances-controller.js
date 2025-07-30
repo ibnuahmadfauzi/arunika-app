@@ -26,7 +26,9 @@ async function getAllAttendances(req, res) {
     JOIN 
       users ON attendances.user_id = users.id
     WHERE
-      attendances.date BETWEEN $1 AND $2;
+      attendances.date BETWEEN $1 AND $2
+    ORDER BY attendances.id DESC
+      ;
   `;
       values = [startDate, endDate];
     } else {
