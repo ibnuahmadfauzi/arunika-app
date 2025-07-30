@@ -3,7 +3,7 @@ const pool = require("../../../config/db");
 require("dotenv").config();
 
 async function checkIn(req, res) {
-  const photoInPath = req.file ? req.file.path : null;
+  const photoInPath = req.file ? "/image/absensi/" + req.file.filename : null;
 
   const newCheckInData = {
     date: req.body.date,
