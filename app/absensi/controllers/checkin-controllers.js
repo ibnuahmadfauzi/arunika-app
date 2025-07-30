@@ -59,11 +59,12 @@ async function checkIn(req, res) {
         description_out,
         photo_out
       ) VALUES (
-        $1, CURRENT_DATE, $2, NULL, $3, $4, NULL, NULL, $5, $6, NULL, NULL
+        $1, $2, $3, NULL, $4, $5, NULL, NULL, $6, $7, NULL, NULL
       )
       `,
       [
         req.user.id,
+        newCheckInData.date,
         newCheckInData.check_in_time,
         newCheckInData.location_in_lat,
         newCheckInData.location_in_long,
