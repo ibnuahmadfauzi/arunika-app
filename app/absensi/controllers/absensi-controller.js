@@ -52,7 +52,7 @@ async function getLastActivity(req, res) {
     const result = await pool.query(
       `
     SELECT 
-      TO_CHAR(date, 'DD-MM-YYYY') AS date,
+      TO_CHAR(date, 'YYYY-MM-DD') AS date,
       check_in_time,
       check_out_time
     FROM attendances
