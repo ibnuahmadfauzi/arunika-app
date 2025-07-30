@@ -6,7 +6,9 @@ const bcrypt = require("bcrypt");
 // get all users data from database
 async function getAllUsers(req, res) {
   try {
-    const result = await pool.query("SELECT id, name, email FROM users");
+    const result = await pool.query(
+      "SELECT id, name, email FROM users ORDER BY name ASC"
+    );
     if (result.rows.length > 0) {
       res.json({
         success: true,
@@ -34,11 +36,48 @@ async function getUserById(req, res) {
   const id = req.params.id;
 
   try {
-    const result = await pool.query(`SELECT * FROM users WHERE id=${id}`);
-    res.json(result.rows);
+    const result = await pool.query(`
+    SELECT
+      users.id,
+      users.name,
+      users.email,
+      users.position_id,
+      positions.name AS position_name,
+      positions.company_id,
+      companies.name AS company_name,
+      users.role_id,
+      roles.name AS role_name,
+      users.photo
+    FROM
+      users
+    JOIN
+      roles ON users.role_id = roles.id
+    JOIN
+      positions ON users.position_id = positions.id
+    JOIN
+      companies ON positions.company_id = companies.id
+    WHERE
+      users.id = ${id};  
+    `);
+    if (result.rows.length > 0) {
+      res.json({
+        success: true,
+        data: result.rows,
+        message: "Berhasil mengambil data user",
+      });
+    } else {
+      res.json({
+        success: true,
+        data: null,
+        message: "Tidak ada data user",
+      });
+    }
   } catch (err) {
     console.error(err.message);
-    res.status(500).send("Server error");
+    res.status(400).json({
+      success: false,
+      message: "Data user gagal ditampilkan",
+    });
   }
 }
 

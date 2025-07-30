@@ -85,7 +85,7 @@ async function getAttendanceById(req, res) {
     const result = await pool.query(`
       SELECT
         attendances.id,
-        attendances.date,
+        TO_CHAR(attendances.date, 'YYYY-MM-DD') AS date,
         attendances.check_in_time,
         attendances.check_out_time,
         attendances.description_in,

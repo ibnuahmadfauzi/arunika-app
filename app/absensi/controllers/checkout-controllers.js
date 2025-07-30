@@ -10,7 +10,18 @@ async function checkOut(req, res) {
     // 🔍 Ambil data attendance hari ini
     const result = await pool.query(
       `
-      SELECT *
+      SELECT 
+      TO_CHAR(date, 'YYYY-MM-DD') AS date,
+      check_in_time,
+      check_out_time,
+      location_in_lat,
+      location_in_long,
+      location_out_lat,
+      location_out_long,
+      description_in,
+      description_out,
+      photo_in,
+      photo_out
       FROM attendances
       WHERE user_id = $1 AND date = CURRENT_DATE
       `,

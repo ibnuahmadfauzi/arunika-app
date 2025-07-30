@@ -30,6 +30,10 @@ app.use(
   "/image/absensi",
   express.static(path.join(__dirname, "app/absensi/uploads"))
 );
+app.use(
+  "/image/user",
+  express.static(path.join(__dirname, "app/arunikacore/uploads"))
+);
 
 // root route
 app.get("/", (req, res) => {
