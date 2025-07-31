@@ -156,10 +156,17 @@ async function deleteUser(req, res) {
   const userId = req.params.id;
   try {
     const result = await pool.query(`DELETE FROM users WHERE id = ${userId};`);
-    res.json(result.rows);
+    res.json({
+      success: true,
+      data: null,
+      message: "Berhasil menghapus data user",
+    });
   } catch (err) {
     console.error(err.message);
-    res.status(500).send("Server error");
+    res.status(400).json({
+      success: false,
+      message: "Gagal menghapus data user",
+    });
   }
 }
 
