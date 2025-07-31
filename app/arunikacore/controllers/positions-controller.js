@@ -158,7 +158,7 @@ async function updatePosition(req, res) {
     res.json({
       success: true,
       data: null,
-      message: "Data posisi baru berhasil diperbarui",
+      message: "Data posisi berhasil diperbarui",
     });
   } catch (err) {
     // write error message to terminal
