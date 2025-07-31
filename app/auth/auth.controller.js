@@ -54,8 +54,8 @@ exports.register = async (req, res) => {
 exports.logout = async (req, res) => {
   res.clearCookie("SessionID", {
     httpOnly: true,
-    secure: true, // tetap sama dengan opsi cookie saat login
-    sameSite: "strict", // tetap sama
+    secure: true,
+    sameSite: "None",
   });
 
   res.status(200).json({
