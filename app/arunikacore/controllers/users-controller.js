@@ -83,17 +83,25 @@ async function getUserById(req, res) {
 
 // store new user data to database
 async function storeUser(req, res) {
+  const photoInPath = req.file ? "/image/user/" + req.file.filename : null;
   let userData = req.body;
   const hashed = await bcrypt.hash(req.body.password, 10);
 
   try {
     const result = await pool.query(
-      `INSERT INTO users (name, email, password, role_id, position_id, created_at, updated_at) VALUES ('${userData.name}', '${userData.email}', '${hashed}', '${userData.role_id}', '${userData.position_id}', CURRENT_TIMESTAMP, NULL);`
+      `INSERT INTO users (name, email, password, role_id, position_id, photo, created_at, updated_at) VALUES ('${userData.name}', '${userData.email}', '${hashed}', '${userData.role_id}', '${userData.position_id}', '${photoInPath}', CURRENT_TIMESTAMP, NULL);`
     );
-    res.json(result.rows);
+    res.json({
+      success: true,
+      data: null,
+      message: "Berhasil menyimpan data user",
+    });
   } catch (err) {
     console.error(err.message);
-    res.status(500).send("Server error");
+    res.status(400).json({
+      success: false,
+      message: "Gagal menyimpan data user",
+    });
   }
 }
 

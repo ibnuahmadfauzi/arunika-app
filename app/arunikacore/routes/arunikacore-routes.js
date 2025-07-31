@@ -1,5 +1,6 @@
 const express = require("express");
 const router = express.Router();
+const upload = require("../middleware/upload");
 
 // import controllers
 const companiesController = require("../controllers/companies-controller");
@@ -70,7 +71,7 @@ router.get("/users", usersController.getAllUsers);
 // GET : 1 user
 router.get("/users/:id", usersController.getUserById);
 // POST : add 1 user data
-router.post("/users", usersController.storeUser);
+router.post("/users", upload.single("photo"), usersController.storeUser);
 // PUT : update 1 user data by ID
 router.put("/users/:id", usersController.updateUser);
 // DELETE : delete 1 user data by ID
