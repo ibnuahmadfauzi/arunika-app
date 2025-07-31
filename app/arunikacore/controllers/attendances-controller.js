@@ -48,7 +48,8 @@ async function getAllAttendances(req, res) {
     WHERE 
       attendances.user_id = $1
     AND
-      attendances.date BETWEEN $2 AND $3;
+      attendances.date BETWEEN $2 AND $3
+    ORDER BY attendances.id DESC;
   `;
       values = [userId, startDate, endDate];
     }
