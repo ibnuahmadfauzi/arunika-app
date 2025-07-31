@@ -4,7 +4,7 @@ const pool = require("../../../config/db");
 // import dotenv package
 require("dotenv").config();
 
-// function for get all roles from database
+// get all roles from database
 async function getAllRoles(req, res) {
   try {
     // query for select id and name from process
@@ -133,7 +133,7 @@ async function updateRole(req, res) {
   // (name)
   let rolesData = req.body;
 
-  // get position 'id' from url
+  // get role 'id' from url
   const roleId = req.params.id;
 
   try {
