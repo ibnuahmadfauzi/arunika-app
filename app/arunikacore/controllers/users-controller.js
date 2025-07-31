@@ -107,32 +107,47 @@ async function storeUser(req, res) {
 
 // update user data to database by id
 async function updateUser(req, res) {
+  const photoInPath = req.file ? "/image/user/" + req.file.filename : null;
   let userData = req.body;
   const userId = req.params.id;
+
   const getPassword = req.body.password;
-
-  if (getPassword.length !== "") {
-    const hashed = await bcrypt.hash(req.body.password, 10);
-
-    try {
-      const result = await pool.query(
-        `UPDATE users SET name = '${userData.name}', email = '${userData.email}', password = '${hashed}', role_id = '${userData.role_id}', position_id = '${userData.position_id}', updated_at=CURRENT_TIMESTAMP WHERE id = '${userId}';`
-      );
-      res.json(result.rows);
-    } catch (err) {
-      console.error(err.message);
-      res.status(500).send("Server error");
+  console.log(photoInPath);
+  try {
+    if (photoInPath !== null) {
+      if (getPassword !== "") {
+        const hashed = await bcrypt.hash(req.body.password, 10);
+        const result = await pool.query(
+          `UPDATE users SET name = '${userData.name}', email = '${userData.email}', password = '${hashed}', role_id = '${userData.role_id}', position_id = '${userData.position_id}', photo = '${photoInPath}', updated_at=CURRENT_TIMESTAMP WHERE id = '${userId}';`
+        );
+      } else {
+        const result = await pool.query(
+          `UPDATE users SET name = '${userData.name}', email = '${userData.email}', role_id = '${userData.role_id}', position_id = '${userData.position_id}', photo = '${photoInPath}', updated_at=CURRENT_TIMESTAMP WHERE id = '${userId}';`
+        );
+      }
+    } else {
+      if (getPassword !== "") {
+        const hashed = await bcrypt.hash(req.body.password, 10);
+        const result = await pool.query(
+          `UPDATE users SET name = '${userData.name}', email = '${userData.email}', password = '${hashed}', role_id = '${userData.role_id}', position_id = '${userData.position_id}', updated_at=CURRENT_TIMESTAMP WHERE id = '${userId}';`
+        );
+      } else {
+        const result = await pool.query(
+          `UPDATE users SET name = '${userData.name}', email = '${userData.email}', role_id = '${userData.role_id}', position_id = '${userData.position_id}', updated_at=CURRENT_TIMESTAMP WHERE id = '${userId}';`
+        );
+      }
     }
-  } else {
-    try {
-      const result = await pool.query(
-        `UPDATE users SET name = '${userData.name}', email = '${userData.email}', role_id = '${userData.role_id}', position_id = '${userData.position_id}', updated_at=CURRENT_TIMESTAMP WHERE id = '${userId}';`
-      );
-      res.json(result.rows);
-    } catch (err) {
-      console.error(err.message);
-      res.status(500).send("Server error");
-    }
+    res.json({
+      success: true,
+      data: null,
+      message: "Berhasil menyimpan data user",
+    });
+  } catch (err) {
+    console.error(err.message);
+    res.status(400).json({
+      success: false,
+      message: "Gagal menyimpan data user",
+    });
   }
 }
 

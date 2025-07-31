@@ -73,7 +73,7 @@ router.get("/users/:id", usersController.getUserById);
 // POST : add 1 user data
 router.post("/users", upload.single("photo"), usersController.storeUser);
 // PUT : update 1 user data by ID
-router.put("/users/:id", usersController.updateUser);
+router.put("/users/:id", upload.single("photo"), usersController.updateUser);
 // DELETE : delete 1 user data by ID
 router.delete("/users/:id", usersController.deleteUser);
 // ======================================================================================== //
