@@ -85,10 +85,30 @@ async function getUserById(req, res) {
     `);
 
     if (result.rows.length > 0) {
+      // create new user data
+      const userData = {
+        id: result.rows[0].id,
+        name: result.rows[0].name,
+        email: result.rows[0].email,
+        position: {
+          id: result.rows[0].position_id,
+          name: result.rows[0].position_name,
+        },
+        company: {
+          id: result.rows[0].company_id,
+          name: result.rows[0].company_name,
+        },
+        role: {
+          id: result.rows[0].role_id,
+          name: result.rows[0].role_name,
+        },
+        photo: result.rows[0].photo,
+      };
+
       // response if result variable is not empty
       res.json({
         success: true,
-        data: result.rows,
+        data: userData,
         message: "Berhasil mengambil data user",
       });
     } else {
@@ -143,8 +163,8 @@ async function storeUser(req, res) {
           '${userData.name}', 
           '${userData.email}', 
           '${hashed}', 
-          '${userData.role_id}', 
-          '${userData.position_id}', 
+          '${userData.roleId}', 
+          '${userData.positionId}', 
           '${photoInPath}', 
           CURRENT_TIMESTAMP, 
           NULL
@@ -203,8 +223,8 @@ async function updateUser(req, res) {
             name = '${userData.name}', 
             email = '${userData.email}', 
             password = '${hashed}', 
-            role_id = '${userData.role_id}', 
-            position_id = '${userData.position_id}', 
+            role_id = '${userData.roleId}', 
+            position_id = '${userData.positionId}', 
             photo = '${photoInPath}', 
             updated_at=CURRENT_TIMESTAMP 
           WHERE 
@@ -219,8 +239,8 @@ async function updateUser(req, res) {
           SET 
             name = '${userData.name}', 
             email = '${userData.email}', 
-            role_id = '${userData.role_id}', 
-            position_id = '${userData.position_id}', 
+            role_id = '${userData.roleId}', 
+            position_id = '${userData.positionId}', 
             photo = '${photoInPath}', 
             updated_at=CURRENT_TIMESTAMP 
           WHERE 
@@ -241,8 +261,8 @@ async function updateUser(req, res) {
             name = '${userData.name}', 
             email = '${userData.email}', 
             password = '${hashed}', 
-            role_id = '${userData.role_id}', 
-            position_id = '${userData.position_id}', 
+            role_id = '${userData.roleId}', 
+            position_id = '${userData.positionId}', 
             updated_at=CURRENT_TIMESTAMP 
           WHERE 
             id = '${userId}'
@@ -255,8 +275,8 @@ async function updateUser(req, res) {
           SET 
             name = '${userData.name}', 
             email = '${userData.email}', 
-            role_id = '${userData.role_id}', 
-            position_id = '${userData.position_id}', 
+            role_id = '${userData.roleId}', 
+            position_id = '${userData.positionId}', 
             updated_at=CURRENT_TIMESTAMP 
           WHERE id = '${userId}'
         ;`);
