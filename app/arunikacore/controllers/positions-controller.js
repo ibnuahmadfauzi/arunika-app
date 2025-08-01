@@ -63,10 +63,19 @@ async function getPositionById(req, res) {
       positions.id=${id};  
     `);
     if (result.rows.length > 0) {
+      // create new position data
+      const positionData = {
+        id: result.rows[0].id,
+        name: result.rows[0].name,
+        company: {
+          id: result.rows[0].company_id,
+          name: result.rows[0].company_name,
+        },
+      };
       // response if position data found
       res.json({
         success: true,
-        data: result.rows,
+        data: positionData,
         message: "Berhasil mengambil data posisi",
       });
     } else {
@@ -108,7 +117,7 @@ async function storePosition(req, res) {
       VALUES 
         (
           '${positionData.name}', 
-          ${positionData.company_id}, 
+          ${positionData.companyId}, 
           CURRENT_TIMESTAMP, 
           NULL
         )
@@ -148,7 +157,7 @@ async function updatePosition(req, res) {
         positions 
       SET 
         name = '${positionData.name}', 
-        company_id = ${positionData.company_id}, 
+        company_id = ${positionData.companyId}, 
         updated_at=CURRENT_TIMESTAMP 
       WHERE 
         id = '${positionId}'
