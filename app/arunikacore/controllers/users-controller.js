@@ -313,6 +313,90 @@ async function deleteUser(req, res) {
   }
 }
 
+// select role data for use to dropdown in user management front-end
+async function getRoleLists(req, res) {
+  try {
+    // query for select id and name from roles table in database
+    const result = await pool.query(`
+      SELECT 
+        id, 
+        name
+      FROM 
+        roles 
+      ORDER BY 
+        name 
+      ASC  
+    `);
+
+    if (result.rows.length > 0) {
+      // response if result variable is not empty
+      res.json({
+        success: true,
+        data: result.rows,
+        message: "Berhasil mengambil semua data role",
+      });
+    } else {
+      // response if result variable is empty
+      res.json({
+        success: true,
+        data: null,
+        message: "Data role kosong",
+      });
+    }
+  } catch (err) {
+    // write error message to terminal
+    console.error(err.message);
+
+    // response if process not run or fail
+    res.status(400).json({
+      success: false,
+      message: "Data role gagal ditampilkan",
+    });
+  }
+}
+
+// select position data for use to dropdown in user management front-end
+async function getPositionLists(req, res) {
+  try {
+    // query for select id and name from positions table in database
+    const result = await pool.query(`
+      SELECT 
+        id, 
+        name
+      FROM 
+        positions 
+      ORDER BY 
+        name 
+      ASC  
+    `);
+
+    if (result.rows.length > 0) {
+      // response if result variable is not empty
+      res.json({
+        success: true,
+        data: result.rows,
+        message: "Berhasil mengambil semua data positi",
+      });
+    } else {
+      // response if result variable is empty
+      res.json({
+        success: true,
+        data: null,
+        message: "Data positi kosong",
+      });
+    }
+  } catch (err) {
+    // write error message to terminal
+    console.error(err.message);
+
+    // response if process not run or fail
+    res.status(400).json({
+      success: false,
+      message: "Data positi gagal ditampilkan",
+    });
+  }
+}
+
 // export all function for use to other file or other location
 module.exports = {
   getAllUsers,
@@ -320,4 +404,6 @@ module.exports = {
   storeUser,
   updateUser,
   deleteUser,
+  getRoleLists,
+  getPositionLists,
 };

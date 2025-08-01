@@ -1,100 +1,137 @@
+// import express package
 const express = require("express");
+
+// import ecpress router package
 const router = express.Router();
+
+// include middleware for upload image from fron-end to arunikacore app controller
 const upload = require("../middleware/upload");
 
-// import controllers
+// import controller for (companies, positions, roles, users, and attendances table)
 const companiesController = require("../controllers/companies-controller");
 const positionsController = require("../controllers/positions-controller");
 const rolesController = require("../controllers/roles-controller");
 const usersController = require("../controllers/users-controller");
 const attendancesController = require("../controllers/attendances-controller");
 
-// Middleware specific to this router
+// route for all endpoin to next other route
 router.use((req, res, next) => {
+  // write time now to terminal
   console.log("ArunikaCore Router Time:", Date.now());
+
+  // execution to next route
   next();
 });
 
-// GET ArunikaCore "/"
+// route for /arunikacore
 router.get("/", (req, res) => {
   res.send("ArunikaCore: HomePage");
 });
 
 // ======================================================================================== //
-// ======================================================================================== //
-// ======================================================================================== //
-// Route for companies
-// GET : all companies
+// route for companies table and controller
+
+// select all company data from companies table
 router.get("/companies", companiesController.getAllCompanies);
-// GET : 1 company
+
+// select 1 company data from companies table and user 'id' in parameter
 router.get("/companies/:id", companiesController.getCompanyById);
-// POST : add 1 company data
+
+// insert company data to companies table
 router.post("/companies", companiesController.storeCompany);
-// PUT : update 1 company data by ID
+
+// update company data in companies table
 router.put("/companies/:id", companiesController.updateCompany);
-// DELETE : delete 1 company data by ID
+
+// delete companies data
 router.delete("/companies/:id", companiesController.deleteCompany);
+
+// end route for companies table and controller
 // ======================================================================================== //
+
 // ======================================================================================== //
-// ======================================================================================== //
-// Route for positions
-// GET : all positions
+// route for positions table and controller
+
+// select all position data from positions table
 router.get("/positions", positionsController.getAllPositions);
-// GET : 1 position
+
+// select 1 position data from positions table and user 'id' in parameter
 router.get("/positions/:id", positionsController.getPositionById);
-// POST : add 1 position data
+
+// insert position data to positions table
 router.post("/positions", positionsController.storePosition);
-// PUT : update 1 position data by ID
+
+// update position data in positions table
 router.put("/positions/:id", positionsController.updatePosition);
-// DELETE : delete 1 position data by ID
+
+// delete position data
 router.delete("/positions/:id", positionsController.deletePosition);
+
+// end route for positions table and controller
 // ======================================================================================== //
+
 // ======================================================================================== //
-// ======================================================================================== //
-// Route for Users
-// GET : all rules
+// route for roles table and controller
+
+// select all role data from roles table
 router.get("/roles", rolesController.getAllRoles);
-// GET : 1 role
+
+// select 1 role data from roles table and role 'id' in parameter
 router.get("/roles/:id", rolesController.getRoleById);
-// POST : add 1 role data
+
+// insert role data to roles table
 router.post("/roles", rolesController.storeRole);
-// PUT : update 1 role data by ID
+
+// update role data in roles table
 router.put("/roles/:id", rolesController.updateRole);
-// DELETE : delete 1 role data by ID
+
+// delete role data
 router.delete("/roles/:id", rolesController.deleteRole);
+
+// end route for roles table and controller
 // ======================================================================================== //
+
 // ======================================================================================== //
-// ======================================================================================== //
-// Route for users
-// GET : all users
+// route for users table and controller
+
+// select all user data from users table
 router.get("/users", usersController.getAllUsers);
-// GET : 1 user
+
+// select 1 user data from users table and user 'id' in parameter
 router.get("/users/:id", usersController.getUserById);
-// POST : add 1 user data
+
+// insert user data to users table
 router.post("/users", upload.single("photo"), usersController.storeUser);
-// PUT : update 1 user data by ID
+
+// update user data in users table
 router.put("/users/:id", upload.single("photo"), usersController.updateUser);
-// DELETE : delete 1 user data by ID
+
+// delete user data
 router.delete("/users/:id", usersController.deleteUser);
+
+// select all role (id & name) for use dropdown in front-end user management
+router.get("/users/role/lists", usersController.getRoleLists);
+
+// select all position (id & name) for use dropdown in front-end user management
+router.get("/users/position/lists", usersController.getPositionLists);
+
+// endroute for users table and controller
 // ======================================================================================== //
+
 // ======================================================================================== //
-// ======================================================================================== //
-// Route for attendances
-// GET : all attendances
+// route for attendances table and controller
+
+// select all attendance data from attendances table
 router.get("/attendances", attendancesController.getAllAttendances);
-// GET : 1 attendance
+
+// select 1 attendance data from attendances table and attendance 'id' in parameter
 router.get("/attendances/:id", attendancesController.getAttendanceById);
-// GET : name & id for dropdown
+
+// select all user (id & name) for use dropdown in front-end user management
 router.get("/attendances/user/lists", attendancesController.getUserLists);
 
-// POST : add 1 attendance data
-// router.post("/attendances", attendancesController.storeAttendance);
-// // PUT : update 1 attendance data by ID
-// router.put("/attendances/:id", attendancesController.updateAttendance);
-// // DELETE : delete 1 attendance data by ID
-// router.delete("/attendances/:id", attendancesController.deleteAttendance);
-// ======================================================================================== //
-// ======================================================================================== //
+// end route for attendances table and controller
 // ======================================================================================== //
 
+// export router file for use other file and location
 module.exports = router;
