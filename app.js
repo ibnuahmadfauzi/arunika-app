@@ -38,7 +38,7 @@ app.use(
 );
 
 // port definitio for listen
-const port = process.env.PORT || 8080;
+const port = process.env.PORT || 3000;
 
 // memanggil cron scheduler
 startDailyJob();
