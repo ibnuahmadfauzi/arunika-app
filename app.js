@@ -38,7 +38,7 @@ app.use(
 );
 
 // port definitio for listen
-const port = process.env.PORT || 5000;
+const port = process.env.PORT || 8080;
 
 // memanggil cron scheduler
 startDailyJob();
@@ -70,6 +70,6 @@ app.get("/", (req, res) => {
 });
 
 // function for start server
-app.listen(5000, "0.0.0.0", () => {
-  console.log("Server running on 0.0.0.0:5000");
+app.listen(port, () => {
+  console.log(`✅ Server running at http://localhost:${port}`);
 });
