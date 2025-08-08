@@ -36,7 +36,7 @@ async function leaveAttachment(req, res) {
           '${newLeaveData.endDate}', 
           '${newLeaveData.reason}',
           '${newLeaveData.attachment}',
-          '${newLeaveData.status}',
+            false,
             CURRENT_TIMESTAMP, 
             NULL
       );`);

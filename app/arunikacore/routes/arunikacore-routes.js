@@ -13,6 +13,7 @@ const positionsController = require("../controllers/positions-controller");
 const rolesController = require("../controllers/roles-controller");
 const usersController = require("../controllers/users-controller");
 const attendancesController = require("../controllers/attendances-controller");
+const leavesController = require("../controllers/leaves-controller");
 
 // route for all endpoin to next other route
 router.use((req, res, next) => {
@@ -131,6 +132,19 @@ router.get("/attendances/:id", attendancesController.getAttendanceById);
 router.get("/attendances/user/lists", attendancesController.getUserLists);
 
 // end route for attendances table and controller
+// ======================================================================================== //
+
+// ======================================================================================== //
+// route for leaves table and controller
+router.get("/leaves", leavesController.getAllLeave);
+
+// select 1 attendance data from attendances table and attendance 'id' in parameter
+router.get("/leaves/:id", leavesController.getLeaveById);
+
+// update company data in companies table
+router.put("/leaves/:id", leavesController.updateLeave);
+
+// end route for leaves table and controller
 // ======================================================================================== //
 
 // export router file for use other file and location
