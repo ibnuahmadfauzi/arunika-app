@@ -5,7 +5,9 @@ const router = express.Router();
 const checkInController = require("../controllers/checkin-controllers");
 const checkOutController = require("../controllers/checkout-controllers");
 const absensiController = require("../controllers/absensi-controller");
+const leaveController = require("../controllers/leave-controller");
 const upload = require("../middleware/upload");
+const leaveUpload = require("../middleware/upload-file");
 
 // Middleware specific to this router
 router.use((req, res, next) => {
@@ -26,6 +28,11 @@ router.put(
   "/checkout",
   upload.single("photo_out"),
   checkOutController.checkOut
+);
+router.post(
+  "/leave",
+  leaveUpload.single("attachment"),
+  leaveController.leaveAttachment
 );
 
 module.exports = router;

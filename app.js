@@ -58,6 +58,12 @@ app.use(
   express.static(path.join(__dirname, "app/absensi/uploads"))
 );
 
+// endpoin static upload file to '/image/absensi'
+app.use(
+  "/file/leave",
+  express.static(path.join(__dirname, "app/absensi/uploads"))
+);
+
 // endpoin static upload file to '/image/user'
 app.use(
   "/image/user",
