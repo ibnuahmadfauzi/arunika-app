@@ -29,10 +29,14 @@ router.put(
   upload.single("photo_out"),
   checkOutController.checkOut
 );
+
+// ======================================================================================== //
 router.post(
   "/leave",
   leaveUpload.single("attachment"),
   leaveController.leaveAttachment
 );
+router.get("/leave/status", leaveController.leaveStatus);
+// ======================================================================================== //
 
 module.exports = router;

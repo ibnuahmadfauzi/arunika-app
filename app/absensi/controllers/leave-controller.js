@@ -57,6 +57,54 @@ async function leaveAttachment(req, res) {
   }
 }
 
+async function leaveStatus(req, res) {
+  let userId = req.user.id;
+  try {
+    const result = await pool.query(`
+        SELECT
+            type,
+            start_date,
+            end_date,
+            reason,
+            attachment,
+            status
+        FROM 
+            leaves
+        WHERE
+            user_id = ${userId}
+        ORDER BY 
+            id DESC
+        LIMIT 1;
+    `);
+
+    if (result.rows.length > 0) {
+      // response if result variable is not empty
+      res.json({
+        success: true,
+        data: result.rows,
+        message: "Berhasil mengambil data cuti",
+      });
+    } else {
+      // response if result variable is empty
+      res.json({
+        success: true,
+        data: null,
+        message: "Data cuti kosong",
+      });
+    }
+  } catch (err) {
+    // write error message to terminal
+    console.error(err.message);
+
+    // response if process not run or fail
+    res.status(400).json({
+      success: false,
+      message: "Data cuti gagal ditampilkan",
+    });
+  }
+}
+
 module.exports = {
   leaveAttachment,
+  leaveStatus,
 };
